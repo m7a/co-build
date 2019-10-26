@@ -223,7 +223,7 @@ License: GPL-3
 		<jar destfile="${masysma.target}.jar">
 			<multirootfileset
 				basedirs="${masysma.internal.java.filepaths}"
-					type="files">
+					type="file">
 				<include name="**/*"/>
 			</multirootfileset>
 			<manifest>
