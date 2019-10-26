@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:if="ant:if" xmlns:unless="ant:unless">
+
+	<!--
+		TODO provide ant extension points
+
+		== ENV ==
+
+		MDVL_CI_PHOENIX_ROOT
+
+		== PROPERTIES ==
+
+		masysma.target    target to build (required)
+		masysma.main      main class for Java builds (Java JAR build only)
+
+		mdpc.name         REQ name of package to build (mdvl-something)
+		mpdc.arch         all/any/amd64/i386/armhf
+		mdpc.descrs       REQ short
+		mdpc.descrl       REQ long
+		mdpc.depends
+		mdpc.bdep
+		mdpc.recommends
+		mdpc.conflicts
+		mdpc.suggests
+		mdpc.lfiles       license files
+		mdpc.section      REQ admin|devel|doc|editors|electronics|
+					embedded|
+					games|graphics|httpd|interpreters|java|
+					libs|math|misc|net|science|shells|tex|
+					text|utils|web|x11
+		mdpc.cpyear       copyright years
+
+		== BUILD SYSTEM ==
+
+		Languages
+		    Ada
+		    C
+		    Java
+		    LaTeX
+
+		General
+		    build
+		    clean
+		    dist-clean
+		    txz            CLASSPATH=/usr/share/java/xz.jar ant txz
+
+		== MDPC 2 ==
+
+		package
+		incver
+		init     := create first changelog.
+
+	-->
+
+	<!-- Defaults are currently Ma_Sys.ma specific -->
+	<property name="mdpc.maintainer"
+			value="Linux-Fan, Ma_Sys.ma &lt;Ma_Sys.ma@web.de&gt;"/>
+	<property name="mdpc.priority" value="optional"/>
+	<property name="mdpc.bdep" value="debhelper (>= 8)"/>
+	<property name="mdpc.depends"
+		value="$${shlibs:Depends}, $${misc:Depends}, $${java:Depends}"/>
+	<property name="mdpc.arch" value="all"/>
+	<property name="mdpc.cpyear" value="2019"/>
+	<property name="mdpc.copyright"
+		value="Copyright (c) ${mdpc.cpyear} Ma_Sys.ma &lt;Ma_Sys.ma@web.de&gt;"/>
+	<property name="mdpc.lfiles" value="*"/>
+
+<property name="mdpc.lblock">
+License: GPL-3
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ .
+ On Debian systems, the full text of the GNU General Public License version 3
+ can be found in the file /usr/share/common-licenses/GPL-3
+</property>
+
+	<property name="mdpc.file.install" value="${masysma.target} /usr/bin"/>
+
+	<!-- =============================================================== -->
+	<!-- ============================================ Ada Compilation == -->
+	<!-- =============================================================== -->
+
+	<target name="masysma_internal_check_ada">
+		<available file="${masysma.target}.adb"
+				property="masysma.internal.ada.present"/>
+	</target>
+	<target name="masysma_hook_ada_predep">
+		<!-- can be overriden in importing files -->
+	</target>
+	<target name="masysma_internal_build_ada"
+				depends="masysma_internal_check_ada,
+					masysma_hook_ada_predep"
+				if="masysma.internal.ada.present">
+		<exec executable="gnatmake" failonerror="true">
+			<arg value="-Wall"/>
+			<arg value="-o"/>
+			<arg value="${masysma.target}"/>
+		</exec>
+	</target>
+	<target name="masysma_internal_clean_ada"
+					depends="masysma_internal_check_ada"
+					if="masysma.internal.ada.present">
+		<delete>
+			<fileset dir=".">
+				<include name="*.o"/>
+				<include name="*.ali"/>
+			</fileset>
+		</delete>
+	</target>
+	<target name="masysma_internal_dist_clean_ada"
+					depends="masysma_internal_clean_ada"
+					if="masysma.internal.ada.present">
+		<delete file="${masysma.target}"/>
+	</target>
+
+	<!-- =============================================================== -->
+	<!-- ======================================== Basic C Compilation == -->
+	<!-- =============================================================== -->
+
+	<target name="masysma_internal_check_c">
+		<fileset dir="." includes="*.c"
+					id="masysma_internal_c_checkdir"/>
+		<condition property="masysma.internal.c.present">
+			<not><equals
+				arg1="${toString:masysma_internal_c_checkdir}"
+				arg2=""/></not>
+		</condition>
+	</target>
+	<target name="masysma_hook_c_predep"/>
+	<target name="masysma_internal_compile_c"
+					depends="masysma_internal_check_c,
+						masysma_hook_c_predep"
+					if="masysma.internal.c.present">
+		<!-- FLAGS_DBG = -O0 -g -DDEBUG -rdynamic -->
+		<apply executable="gcc" failonerror="true">
+			<arg value="-Wall"/>
+			<arg value="-pedantic"/>
+			<arg value="-std=c89"/>
+			<arg value="-O3"/>
+			<arg value="-c"/>
+			<arg value="-o"/>
+			<targetfile/>
+			<srcfile/>
+			<fileset dir="." includes="*.c"/>
+			<mapper type="glob" from="*.c" to="*.o"/>
+		</apply>
+	</target>
+	<target name="masysma_internal_build_c"
+					depends="masysma_internal_compile_c"
+					if="masysma.internal.c.present">
+		<apply executable="gcc" failonerror="true" parallel="true">
+			<arg value="-o"/>
+			<arg value="${masysma.target}"/>
+			<srcfile/>
+			<fileset dir="." includes="*.o"/>
+		</apply>
+	</target>
+	<target name="masysma_internal_clean_c"
+					depends="masysma_internal_check_c"
+					if="masysma.internal.c.present">
+		<delete><fileset dir="." includes="*.o"/></delete>
+	</target>
+	<target name="masysma_internal_dist_clean_c"
+					depends="masysma_internal_clean_c"
+					if="masysma.internal.c.present">
+		<delete file="${masysma.target}"/>
+	</target>
+
+	<!-- =============================================================== -->
+	<!-- =========================================== Java Compilation == -->
+	<!-- =============================================================== -->
+
+	<target name="masysma_internal_check_java">
+		<fileset dir="." includes="**/*.java"
+					id="masysma_internal_java_checkdir"/>
+		<condition property="masysma.internal.java.present">
+			<not><equals
+			arg1="${toString:masysma_internal_java_checkdir}"
+			arg2=""/></not>
+		</condition>
+	</target>
+	<target name="masysma_hook_java_predep"/>
+	<target name="masysma_internal_build_java"
+					depends="masysma_internal_check_java,
+						masysma_hook_java_predep"
+					if="masysma.internal.java.present">
+		<javac debug="true" includeantruntime="false" srcdir=".">
+			<compilerarg value="-Xlint:unchecked"/>
+		</javac>
+	</target>
+	<target name="masysma_internal_clean_java"
+					depends="masysma_internal_check_java"
+					if="masysma.internal.java.present">
+		<delete><fileset dir="." includes="**/*.class"/></delete>
+	</target>
+	<target name="masysma_internal_dist_clean_java"
+					depends="masysma_internal_clean_java"
+					if="masysma.internal.java.present">
+		<delete file="${masysma.target}.jar"/>
+	</target>
+	<target name="jar" depends="masysma_internal_build_java"
+					if="masysma.internal.java.present">
+		<pathconvert pathsep=","
+				property="masysma.internal.java.filepaths">
+			<map from="./" to=""/>
+			<regexpmapper from="(.*)\${file.separator}" to="\1" />
+			<path>
+				<fileset dir=".">
+					<include name="**/*.class" />
+				</fileset>
+			</path>
+		</pathconvert>
+		<jar destfile="${masysma.target}.jar">
+			<multirootfileset
+				basedirs="${masysma.internal.java.filepaths}"
+					type="files">
+				<include name="**/*"/>
+			</multirootfileset>
+			<manifest>
+				<attribute name="Main-Class"
+						value="${masysma.main}"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- =============================================================== -->
+	<!-- ========================================== LaTeX compilation == -->
+	<!-- =============================================================== -->
+
+	<macrodef name="masysma_internal_texrun">
+		<attribute name="nextnr"/>
+		<sequential>
+			<exec executable="pdflatex" failonerror="true">
+				<arg value="-halt-on-error"/>
+				<arg value="-file-line-error"/>
+				<arg value="-interaction"/>
+				<arg value="batchmode"/>
+				<arg value="${masysma.target}"/>
+			</exec>
+			<loadfile
+			property="masysma.internal.rerun@{nextnr}.ind.present"
+			srcfile="${masysma.target}.log">
+				<filterchain>
+					<linecontains>
+						<contains value="Rerun to"/>
+					</linecontains>
+				</filterchain>
+			</loadfile>
+		</sequential>
+	</macrodef>
+
+	<target name="masysma_internal_tex_check">
+		<available file="${masysma.target}.tex"
+				property="masysma.internal.tex.present"/>
+	</target>
+	<target name="masysma_hook_tex_predep">
+		<!-- can be overriden in importing files -->
+	</target>
+	<target name="masysma_internal_tex_00"
+			depends="masysma_internal_tex_check,
+						masysma_hook_tex_predep"
+			if="masysma.internal.tex.present">
+		<masysma_internal_texrun nextnr="1"/>
+	</target>
+	<target name="masysma_internal_bibtex_check"
+				depends="masysma_internal_tex_00"
+				if="masysma.internal.rerun1.ind.present">
+		<available file="literature.bib"
+				property="masysma.internal.bib.present"/>
+	</target>
+	<target name="masysma_internal_bibtex"
+					depends="masysma_internal_bibtex_check"
+					if="masysma.internal.bib.present">
+		<exec executable="bibtex8" failonerror="true">
+			<arg value="${masysma.target}"/>
+		</exec>
+	</target>
+	<target name="masysma_internal_tex_01" depends="masysma_internal_bibtex"
+				if="masysma.internal.rerun1.ind.present">
+		<masysma_internal_texrun nextnr="2"/>
+	</target>
+	<target name="masysma_internal_tex_02" depends="masysma_internal_tex_01"
+				if="masysma.internal.rerun2.ind.present">
+		<masysma_internal_texrun nextnr="3"/>
+	</target>
+	<target name="masysma_internal_tex_03" depends="masysma_internal_tex_02"
+				if="masysma.internal.rerun3.ind.present">
+		<masysma_internal_texrun nextnr="4"/>
+	</target>
+	<target name="masysma_internal_tex_04" depends="masysma_internal_tex_03"
+				if="masysma.internal.rerun4.ind.present">
+		<masysma_internal_texrun nextnr="5"/>
+	</target>
+	<target name="masysma_internal_tex_05" depends="masysma_internal_tex_04"
+				if="masysma.internal.rerun5.ind.present">
+		<masysma_internal_texrun nextnr="6"/>
+	</target>
+	<target name="masysma_internal_tex_06" depends="masysma_internal_tex_05"
+				if="masysma.internal.rerun6.ind.present">
+		<masysma_internal_texrun nextnr="7"/>
+	</target>
+	<target name="masysma_internal_tex_07" depends="masysma_internal_tex_06"
+				if="masysma.internal.rerun7.ind.present">
+		<masysma_internal_texrun nextnr="8"/>
+	</target>
+
+	<target name="masysma_internal_build_tex"
+				depends="masysma_internal_tex_05"
+				if="masysma.internal.rerun6.ind.present">
+		<fail message="Number of tries exceeded"/>
+	</target>
+
+	<target name="masysma_internal_clean_tex"
+					depends="masysma_internal_tex_check"
+					if="masysma.internal.tex.present">
+		<delete file="${masysma.target}.aux"/>
+		<delete file="${masysma.target}.bbl"/>
+		<delete file="${masysma.target}.blg"/>
+		<delete file="${masysma.target}.log"/>
+		<delete file="${masysma.target}.nav"/>
+		<delete file="${masysma.target}.out"/>
+		<delete file="${masysma.target}.lof"/>
+		<delete file="${masysma.target}.lot"/>
+		<delete file="${masysma.target}.loe"/>
+		<delete file="${masysma.target}.len"/>
+		<delete file="${masysma.target}.snm"/>
+		<delete file="${masysma.target}.toc"/>
+		<delete file="${masysma.target}.vrb"/>
+	</target>
+	<target name="masysma_internal_dist_clean_tex"
+					depends="masysma_internal_clean_tex"
+					if="masysma.internal.tex.present">
+		<delete file="${masysma.target}.pdf"/>
+	</target>
+
+	<!-- =============================================================== -->
+	<!-- ============================================ General Targets == -->
+	<!-- =============================================================== -->
+
+	<target name="build" depends="masysma_internal_build_tex,
+					masysma_internal_build_java,
+					masysma_internal_build_c,
+					masysma_internal_build_ada"/>
+	<target name="clean" depends="masysma_internal_clean_tex,
+					masysma_internal_clean_java,
+					masysma_internal_clean_c,
+					masysma_internal_clean_ada"/>
+	<target name="dist-clean" depends="masysma_internal_dist_clean_tex,
+					masysma_internal_dist_clean_java,
+					masysma_internal_dist_clean_c,
+					masysma_internal_dist_clean_ada"/>
+
+	<!-- requires xz.jar on CLASSPATH -->
+	<target name="txz" depends="build,jar,clean">
+		<tar longfile="posix" destfile="${masysma.target}.tar.xz"
+							compression="xz">
+			<tarfileset dir="." includes="*/**"
+				excludes="${masysma.target}.tar.xz, .git,
+						**/*.swp, x_dev, xond"
+				prefix="${masysma.target}"/>
+		</tar>
+	</target>
+
+	<!-- =============================================================== -->
+	<!-- ===================================================== MDPC 2 == -->
+	<!-- =============================================================== -->
+
+	<target name="init">
+		<!-- see https://askubuntu.com/questions/579323 -->
+		<exec executable="dch" failonerror="true">
+			<env key="DEBEMAIL" value="${mdpc.maintainer}"/>
+			<arg value="-c"/><arg value="debian-changelog.txt"/>
+			<arg value="--package"/><arg value="${mdpc.name}"/>
+			<arg value="--create"/>
+			<arg value="-D"/><arg value="stable"/>
+			<arg value="-v"/><arg value="1.0.0"/>
+			<arg value="Package created with MDPC 2"/>
+		</exec>
+	</target>
+
+	<target name="package">
+		<property name="mdpc.internal.pkgtmp"
+					value="mdpcpkgtmp/${mdpc.name}-0.0.0"/>
+		<property name="mdpc.internal.recommends" value=""
+						unless:set="mdpc.recommends"/>
+		<property name="mdpc.internal.recommends"
+				value="&#x0a;Recommends: ${mdpc.recommends}"
+				if:set="mdpc.recommends"/>
+		<property name="mdpc.internal.suggests" value=""
+						unless:set="mdpc.suggests"/>
+		<property name="mdpc.internal.suggests"
+				value="&#x0a;Suggests: ${mdpc.suggests}"
+				if:set="mdpc.suggests"/>
+		<property name="mdpc.internal.conflicts" value=""
+						unless:set="mdpc.conflicts"/>
+		<property name="mdpc.internal.conflicts"
+				value="&#x0a;Conflicts: ${mdpc.conflicts}"
+				if:set="mdpc.conflicts"/>
+
+		<property name="mdpc.internal.absoluteincludepath"
+				location="${masysma.internal.includepath}"/>
+
+		<mkdir dir="${mdpc.internal.pkgtmp}/debian/source"/>
+		<echo file="${mdpc.internal.pkgtmp}/debian/compat">9</echo>
+		<echo file="${mdpc.internal.pkgtmp}/debian/source/format"
+							>3.0 (native)</echo>
+<!-- BEGIN FORMAT PRESERVED ECHO -->
+		<echo file="${mdpc.internal.pkgtmp}/debian/rules"
+>#!/usr/bin/make -f
+%:
+	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@</echo>
+		<chmod file="${mdpc.internal.pkgtmp}/debian/rules" perm="755"/>
+		<echo file="${mdpc.internal.pkgtmp}/debian/control"
+>Source: ${mdpc.name}
+Maintainer: ${mdpc.maintainer}
+Section: ${mdpc.section}
+Priority: ${mdpc.priority}
+Standards-Version: 4.3.0
+Build-Depends: ${mdpc.bdep}
+
+Package: ${mdpc.name}
+Architecture: ${mdpc.arch}
+Depends: ${mdpc.depends}${mdpc.internal.recommends}${mdpc.internal.suggests}${mdpc.internal.conflicts}
+Description: ${mdpc.descrs}${mdpc.descrl}</echo>
+		<echo file="${mdpc.internal.pkgtmp}/debian/copyright"
+>Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files: ${mdpc.lfiles}
+Copyright: ${mdpc.copyright}${mdpc.lblock}</echo>
+		<echo file="${mdpc.internal.pkgtmp}/debian/${mdpc.name}.install"
+>${mdpc.file.install}</echo>
+<!-- END FORMAT PRESERVED ECHO -->
+		<copy todir="mdpcpkgtmp/${mdpc.name}-0.0.0">
+			<fileset dir=".">
+				<exclude name="${mdpc.name}*.deb"/>
+				<exclude name="mdpcpkgtmp/**"/>
+				<!-- to be copied separately -->
+				<exclude name="debian-changelog.txt"/>
+			</fileset>
+		</copy>
+		<copy tofile="mdpcpkgtmp/${mdpc.name}-0.0.0/debian/changelog"
+						file="debian-changelog.txt"/>
+
+		<exec executable="debuild" failonerror="true"
+					dir="mdpcpkgtmp/${mdpc.name}-0.0.0">
+			<!--
+				skip generation of rarely needed debug symbol
+				packages
+			-->
+			<env key="DEB_BUILD_OPTIONS" value="noddebs"/>
+			<arg value="-j8"/>
+			<arg value="-us"/>
+			<arg value="-uc"/>
+			<arg value="-tc"/>
+		</exec>
+
+		<move todir="..">
+			<fileset dir="mdpcpkgtmp">
+				<include name="${mdpc.name}*.deb"/>
+			</fileset>
+		</move>
+
+		<delete dir="mdpcpkgtmp"/>
+	</target>
+
+	<target name="incver">
+		<!--
+			special execution to attach to terminal for interactive
+			VIM usage
+		-->
+		<exec executable="/bin/sh" failonerror="true">
+			<env key="DEBEMAIL" value="${mdpc.maintainer}"/>
+			<arg value="-ec"/>
+			<arg value="dch --package ${mdpc.name} -D stable -c debian-changelog.txt -i &lt; /dev/tty &gt; /dev/tty 2&gt; /dev/tty"/>
+		</exec>
+	</target>
+
+</project>
