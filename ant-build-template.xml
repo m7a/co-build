@@ -180,6 +180,10 @@ License: GPL-3
 	<!-- =========================================== Java Compilation == -->
 	<!-- =============================================================== -->
 
+	<path id="masysma.classpath">
+		<fileset dir="lib" includes="*.jar" erroronmissingdir="false"/>
+	</path>
+
 	<target name="masysma_internal_check_java">
 		<fileset dir="." includes="**/*.java"
 					id="masysma_internal_java_checkdir"/>
@@ -195,6 +199,7 @@ License: GPL-3
 						masysma_hook_java_predep"
 					if="masysma.internal.java.present">
 		<javac debug="true" includeantruntime="false" srcdir=".">
+			<classpath refid="masysma.classpath"/>
 			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
 	</target>
