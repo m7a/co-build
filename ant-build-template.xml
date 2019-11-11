@@ -184,7 +184,9 @@ License: GPL-3
 		<fileset dir="lib" includes="*.jar" erroronmissingdir="false"/>
 	</path>
 
-	<target name="masysma_internal_check_java">
+	<extension-point name="masysma_hook_java_precheck"/>	
+	<target name="masysma_internal_check_java"
+					depends="masysma_hook_java_precheck">
 		<fileset dir="." includes="**/*.java"
 					id="masysma_internal_java_checkdir"/>
 		<condition property="masysma.internal.java.present">
@@ -193,7 +195,7 @@ License: GPL-3
 			arg2=""/></not>
 		</condition>
 	</target>
-	<target name="masysma_hook_java_predep"/>
+	<extension-point name="masysma_hook_java_predep"/>	
 	<target name="masysma_internal_build_java"
 					depends="masysma_internal_check_java,
 						masysma_hook_java_predep"
