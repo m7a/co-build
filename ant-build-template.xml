@@ -84,6 +84,10 @@ License: GPL-3
  can be found in the file /usr/share/common-licenses/GPL-3
 </property>
 
+	<property name="mdpc.copyright.file">
+Files: ${mdpc.lfiles}
+Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
+
 	<property name="mdpc.file.install" value="${masysma.target} /usr/bin"/>
 
 	<!-- =============================================================== -->
@@ -421,7 +425,8 @@ License: GPL-3
 		<echo file="${mdpc.internal.pkgtmp}/debian/compat">9</echo>
 		<echo file="${mdpc.internal.pkgtmp}/debian/source/format"
 							>3.0 (native)</echo>
-<!-- BEGIN FORMAT PRESERVED ECHO -->
+
+<!-- BEGIN FORMAT PRESERVED AREA -->
 		<echo file="${mdpc.internal.pkgtmp}/debian/rules"
 >#!/usr/bin/make -f
 %:
@@ -441,9 +446,7 @@ Depends: ${mdpc.depends}${mdpc.internal.recommends}${mdpc.internal.suggests}${md
 Description: ${mdpc.descrs}${mdpc.descrl}</echo>
 		<echo file="${mdpc.internal.pkgtmp}/debian/copyright"
 >Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-
-Files: ${mdpc.lfiles}
-Copyright: ${mdpc.copyright}${mdpc.lblock}</echo>
+${mdpc.copyright.file}</echo>
 		<echo file="${mdpc.internal.pkgtmp}/debian/${mdpc.name}.install"
 >${mdpc.file.install}</echo>
 <!-- END FORMAT PRESERVED ECHO -->
