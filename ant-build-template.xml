@@ -495,4 +495,41 @@ ${mdpc.copyright.file}</echo>
 		</exec>
 	</target>
 
+	<!-- =============================================================== -->
+	<!-- ==================================================== MDVL CI == -->
+	<!-- =============================================================== -->
+
+	<macrodef name="masysma_require_repo">
+		<attribute name="masysmarepoid"/>
+		<sequential>
+			<!-- indentation levels exceeded -->
+			<available
+			file="${masysma.internal.includepath}/@{masysmarepoid}"
+			type="dir" property="masysma.internal.repo.present"/>
+			<sequential unless:set="masysma.internal.repo.present">
+			<exec executable="git" failonerror="true"
+					dir="${masysma.internal.includepath}">
+			<arg value="clone"/>
+			<arg value="https://github.com/m7a/@{masysmarepoid}"/>
+			</exec>
+			</sequential>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="masysma_require_artifact">
+		<attribute name="masysmaartifact"/>
+		<attribute name="masysmaatarget"/>
+		<attribute name="masysmaadef"/>
+		<sequential>
+			<masysma_require_repo masysmarepoid="co-maartifact"/>
+			<exec executable="perl" failonerror="true">
+				<arg value="${masysma.internal.includepath}/co-maartifact/maartifact.pl"/>
+				<arg value="extract"/>
+				<arg value="@{masysmaartifact}"/>
+				<arg value="@{masysmaatarget}"/>
+				<arg value="@{masysmaadef}"/>
+			</exec>
+		</sequential>
+	</macrodef>
+
 </project>
