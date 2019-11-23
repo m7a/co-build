@@ -90,6 +90,8 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 
 	<property name="mdpc.file.install" value="${masysma.target} /usr/bin"/>
 
+	<property name="masysma.java.filepaths" value="ma"/>
+
 	<!-- =============================================================== -->
 	<!-- ============================================ Ada Compilation == -->
 	<!-- =============================================================== -->
@@ -187,6 +189,8 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<path id="masysma.classpath">
 		<fileset dir="lib" includes="*.jar" erroronmissingdir="false"/>
 	</path>
+	<fileset id="masysma.inccls" dir="." includes="ma/**/*"
+						erroronmissingdir="false"/>
 
 	<extension-point name="masysma_hook_java_precheck"/>	
 	<target name="masysma_internal_check_java"
@@ -221,22 +225,8 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	</target>
 	<target name="jar" depends="masysma_internal_build_java"
 					if="masysma.internal.java.present">
-		<pathconvert pathsep=","
-				property="masysma.internal.java.filepaths">
-			<map from="./" to=""/>
-			<regexpmapper from="(.*)\${file.separator}" to="\1" />
-			<path>
-				<fileset dir=".">
-					<include name="**/*.class" />
-				</fileset>
-			</path>
-		</pathconvert>
 		<jar destfile="${masysma.target}.jar">
-			<multirootfileset
-				basedirs="${masysma.internal.java.filepaths}"
-					type="file">
-				<include name="**/*"/>
-			</multirootfileset>
+			<fileset refid="masysma.inccls"/>
 			<manifest>
 				<attribute name="Main-Class"
 						value="${masysma.main}"/>
