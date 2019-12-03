@@ -134,7 +134,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<!-- =============================================================== -->
 
 	<target name="masysma_internal_check_c">
-		<fileset dir="." includes="*.c"
+		<fileset dir="${basedir}" includes="*.c"
 					id="masysma_internal_c_checkdir"/>
 		<condition property="masysma.internal.c.present">
 			<not><equals
@@ -154,8 +154,16 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 			<arg value="-std=c89"/>
 			<arg value="-O3"/>
 			<arg value="-c"/>
-			<arg value="-o"/>
-			<targetfile/>
+			<!--
+				Note that while htis would have been expected
+				to be the right thing, it causes files to be
+				written in the directory ant was invoked from
+				instead of next to the original file. Leaving
+				the target file out mitigates this.
+
+				<arg value="-o"/>
+				<targetfile/>
+			-->
 			<srcfile/>
 			<fileset dir="." includes="*.c"/>
 			<mapper type="glob" from="*.c" to="*.o"/>
