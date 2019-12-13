@@ -155,7 +155,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 			<arg value="-O3"/>
 			<arg value="-c"/>
 			<!--
-				Note that while htis would have been expected
+				Note that while this would have been expected
 				to be the right thing, it causes files to be
 				written in the directory ant was invoked from
 				instead of next to the original file. Leaving
