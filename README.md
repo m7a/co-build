@@ -29,7 +29,7 @@ MDPC scripts and the previously used Makefile templates.
 
 In addition to being a template, this is designed to facilitate _code reuse_ by
 not being copied upon use, but rather _imported_. E.g. this XML can be loaded
-directly from its repository or alternative from the file system. See section
+directly from its repository or alternatively from the file system. See section
 _Using the Template_ for details.
 
 The template is designed to allow building programs in the following programming
