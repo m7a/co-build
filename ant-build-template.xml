@@ -30,6 +30,9 @@
 					text|utils|web|x11
 		mdpc.cpyear       copyright years
 
+		mdpc.file.install
+		mdpc.file.displace
+
 		== BUILD SYSTEM ==
 
 		Languages
@@ -42,7 +45,7 @@
 		    build
 		    clean
 		    dist-clean
-		    txz            CLASSPATH=/usr/share/java/xz.jar ant txz
+		    txz           CLASSPATH=/usr/share/java/xz.jar ant txz
 
 		== MDPC 2 ==
 
@@ -422,7 +425,10 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 		<mkdir dir="${mdpc.internal.pkgtmp}/debian/source"/>
 		<echo file="${mdpc.internal.pkgtmp}/debian/compat">9</echo>
 		<echo file="${mdpc.internal.pkgtmp}/debian/source/format"
-							>3.0 (native)</echo>
+						>3.0 (native)</echo>
+		<echo if:set="${mdpc.file.displace}"
+		file="${mdpc.internal.pkgtmp}/debian/${mdpc.name}.displace"
+						>${mdpc.file.displace}</echo>
 
 <!-- BEGIN FORMAT PRESERVED AREA -->
 		<echo file="${mdpc.internal.pkgtmp}/debian/rules"
