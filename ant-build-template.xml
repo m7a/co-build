@@ -426,7 +426,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 		<echo file="${mdpc.internal.pkgtmp}/debian/compat">9</echo>
 		<echo file="${mdpc.internal.pkgtmp}/debian/source/format"
 						>3.0 (native)</echo>
-		<echo if:set="${mdpc.file.displace}"
+		<echo if:set="mdpc.file.displace"
 		file="${mdpc.internal.pkgtmp}/debian/${mdpc.name}.displace"
 						>${mdpc.file.displace}</echo>
 
@@ -434,7 +434,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 		<echo file="${mdpc.internal.pkgtmp}/debian/rules"
 >#!/usr/bin/make -f
 %:
-	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@</echo>
+	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@ --with=config-package</echo>
 		<chmod file="${mdpc.internal.pkgtmp}/debian/rules" perm="755"/>
 		<echo file="${mdpc.internal.pkgtmp}/debian/control"
 >Source: ${mdpc.name}
