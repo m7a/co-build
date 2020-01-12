@@ -146,6 +146,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 		</condition>
 	</target>
 	<target name="masysma_hook_c_predep"/>
+	<property name="masysma.c.standard" value="c89"/>
 	<target name="masysma_internal_compile_c"
 					depends="masysma_internal_check_c,
 						masysma_hook_c_predep"
@@ -154,7 +155,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 		<apply executable="gcc" failonerror="true">
 			<arg value="-Wall"/>
 			<arg value="-pedantic"/>
-			<arg value="-std=c89"/>
+			<arg value="-std=${masysma.c.standard}"/>
 			<arg value="-O3"/>
 			<arg value="-c"/>
 			<!--
@@ -172,12 +173,14 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 			<mapper type="glob" from="*.c" to="*.o"/>
 		</apply>
 	</target>
+	<property name="masysma.c.link.1" value=""/>
 	<target name="masysma_internal_build_c"
 					depends="masysma_internal_compile_c"
 					if="masysma.internal.c.present">
 		<apply executable="gcc" failonerror="true" parallel="true">
 			<arg value="-o"/>
 			<arg value="${masysma.target}"/>
+			<arg value="${masysma.c.link.1}" unless:blank="${masysma.c.link.1}"/>
 			<srcfile/>
 			<fileset dir="." includes="*.o"/>
 		</apply>
