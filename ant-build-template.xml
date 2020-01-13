@@ -95,6 +95,10 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 
 	<property name="masysma.java.filepaths" value="ma"/>
 
+	<target name="masysma_internal_ver">
+		<echo>Ma_Sys.ma Build Template 1.0.1 / MDPC 2.0</echo>
+	</target>
+
 	<!-- =============================================================== -->
 	<!-- ============================================ Ada Compilation == -->
 	<!-- =============================================================== -->
@@ -174,6 +178,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 		</apply>
 	</target>
 	<property name="masysma.c.link.1" value=""/>
+	<property name="masysma.c.link.2" value=""/>
 	<target name="masysma_internal_build_c"
 					depends="masysma_internal_compile_c"
 					if="masysma.internal.c.present">
@@ -181,6 +186,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 			<arg value="-o"/>
 			<arg value="${masysma.target}"/>
 			<arg value="${masysma.c.link.1}" unless:blank="${masysma.c.link.1}"/>
+			<arg value="${masysma.c.link.2}" unless:blank="${masysma.c.link.2}"/>
 			<srcfile/>
 			<fileset dir="." includes="*.o"/>
 		</apply>
@@ -362,15 +368,18 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<!-- ============================================ General Targets == -->
 	<!-- =============================================================== -->
 
-	<target name="build" depends="masysma_internal_build_tex,
+	<target name="build" depends="masysma_internal_ver,
+					masysma_internal_build_tex,
 					masysma_internal_build_java,
 					masysma_internal_build_c,
 					masysma_internal_build_ada"/>
-	<target name="clean" depends="masysma_internal_clean_tex,
+	<target name="clean" depends="masysma_internal_ver,
+					masysma_internal_clean_tex,
 					masysma_internal_clean_java,
 					masysma_internal_clean_c,
 					masysma_internal_clean_ada"/>
-	<target name="dist-clean" depends="masysma_internal_dist_clean_tex,
+	<target name="dist-clean" depends="masysma_internal_ver,
+					masysma_internal_dist_clean_tex,
 					masysma_internal_dist_clean_java,
 					masysma_internal_dist_clean_c,
 					masysma_internal_dist_clean_ada"/>
