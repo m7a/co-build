@@ -10,7 +10,7 @@
 
 		== PROPERTIES ==
 
-		masysma.target    target to build (required)
+		masysma.target    target to build (required for all but recursive)
 		masysma.main      main class for Java builds (Java JAR build only)
 
 		mdpc.name         REQ name of package to build (mdvl-something)
@@ -96,7 +96,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<property name="masysma.java.filepaths" value="ma"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.1 / MDPC 2.0</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.2 / MDPC 2.0</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -228,7 +228,8 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 					depends="masysma_internal_check_java,
 						masysma_hook_java_predep"
 					if="masysma.internal.java.present">
-		<javac debug="true" includeantruntime="false" srcdir=".">
+		<javac debug="true" includeantruntime="false" srcdir="."
+							if:set="masysma.target">
 			<classpath refid="masysma.classpath"/>
 			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
@@ -236,16 +237,18 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<target name="masysma_internal_clean_java"
 					depends="masysma_internal_check_java"
 					if="masysma.internal.java.present">
-		<delete><fileset dir="." includes="**/*.class"/></delete>
+		<delete if:set="masysma.target">
+			<fileset dir="." includes="**/*.class"/>
+		</delete>
 	</target>
 	<target name="masysma_internal_dist_clean_java"
 					depends="masysma_internal_clean_java"
 					if="masysma.internal.java.present">
-		<delete file="${masysma.target}.jar"/>
+		<delete file="${masysma.target}.jar" if:set="masysma.target"/>
 	</target>
 	<target name="jar" depends="masysma_internal_build_java"
 					if="masysma.internal.java.present">
-		<jar destfile="${masysma.target}.jar">
+		<jar destfile="${masysma.target}.jar" if:set="masysma.target">
 			<fileset refid="masysma.inccls"/>
 			<manifest>
 				<attribute name="Main-Class"
@@ -365,20 +368,58 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	</target>
 
 	<!-- =============================================================== -->
+	<!-- ========================================== Recursive Targets == -->
+	<!-- =============================================================== -->
+
+	<target name="masysma_internal_build_recursive">
+		<!--
+			set to default s.t. subants can have other targets as
+			their primary e.g. jar
+		-->
+		<subant target="" failonerror="true"
+						unless:set="masysma.target">
+			<property name="masysma.internal.includepath"
+				value="${masysma.internal.includepath}"/>
+			<fileset dir="." includes="*/build.xml"/>
+		</subant>
+	</target>
+
+	<target name="masysma_internal_clean_recursive">
+		<subant target="clean" failonerror="true"
+						unless:set="masysma.target">
+			<property name="masysma.internal.includepath"
+				value="${masysma.internal.includepath}"/>
+			<fileset dir="." includes="*/build.xml"/>
+		</subant>
+	</target>
+
+	<target name="masysma_internal_dist_clean_recursive">
+		<subant target="dist-clean" failonerror="true"
+						unless:set="masysma.target">
+			<property name="masysma.internal.includepath"
+				value="${masysma.internal.includepath}"/>
+			<fileset dir="." includes="*/build.xml"/>
+		</subant>
+	</target>
+
+	<!-- =============================================================== -->
 	<!-- ============================================ General Targets == -->
 	<!-- =============================================================== -->
 
 	<target name="build" depends="masysma_internal_ver,
+					masysma_internal_build_recursive,
 					masysma_internal_build_tex,
 					masysma_internal_build_java,
 					masysma_internal_build_c,
 					masysma_internal_build_ada"/>
 	<target name="clean" depends="masysma_internal_ver,
+					masysma_internal_clean_recursive,
 					masysma_internal_clean_tex,
 					masysma_internal_clean_java,
 					masysma_internal_clean_c,
 					masysma_internal_clean_ada"/>
 	<target name="dist-clean" depends="masysma_internal_ver,
+					masysma_internal_dist_clean_recursive,
 					masysma_internal_dist_clean_tex,
 					masysma_internal_dist_clean_java,
 					masysma_internal_dist_clean_c,

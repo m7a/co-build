@@ -39,7 +39,8 @@ languages:
  * C
  * Java
 
-Additionally, it can compile _LaTeX_ source code to PDF.
+Additionally, it can compile _LaTeX_ source code to PDF and act as a top-level
+template for recursive invocation.
 
 How to compile Projects using this Template
 ===========================================
