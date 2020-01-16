@@ -96,7 +96,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<property name="masysma.java.filepaths" value="ma"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.2 / MDPC 2.0</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.3 / MDPC 2.0</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -118,6 +118,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 			<arg value="-Wall"/>
 			<arg value="-o"/>
 			<arg value="${masysma.target}"/>
+			<arg value="${masysma.target}.adb"/>
 		</exec>
 	</target>
 	<target name="masysma_internal_clean_ada"
