@@ -63,7 +63,7 @@
 	<property name="mdpc.depends"
 		value="$${shlibs:Depends}, $${misc:Depends}, $${java:Depends}"/>
 	<property name="mdpc.arch" value="all"/>
-	<property name="mdpc.cpyear" value="2019"/>
+	<property name="mdpc.cpyear" value="2020"/>
 	<property name="mdpc.copyright"
 		value="Copyright (c) ${mdpc.cpyear} Ma_Sys.ma &lt;Ma_Sys.ma@web.de&gt;"/>
 	<property name="mdpc.lfiles" value="*"/>
