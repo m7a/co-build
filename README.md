@@ -10,7 +10,7 @@ x-masysma-version: 1.0.0
 x-masysma-repository: https://www.github.com/m7a/co-build
 x-masysma-owned: 1
 x-masysma-copyright: |
-  Copyright (c) 2019 Ma_Sys.ma.
+  Copyright (c) 2019, 2020 Ma_Sys.ma.
   For further info send an e-mail to Ma_Sys.ma@web.de.
 ---
 WARNING: EXPERIMENTAL CODE
@@ -171,7 +171,7 @@ executable file to produce.
 ## C
 
 Detection
-:   C compilation is detected by the existency of any `.c` file in the
+:   C compilation is detected by the existence of any `.c` file in the
     `${basedir}`.
 
 Compilation
