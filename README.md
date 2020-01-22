@@ -147,12 +147,58 @@ parts of the build targets. They can read its absolute location from property
 Use in Projects with a single Programming Language
 ==================================================
 
-_TODO NO CONTENT ON THIS YET_
+The following sections show how the template can be instantiated for a given
+directory with the source code in a single programming language.
+
+To allow automatic compilation, at least a `masysma.target` needs to be given.
+This is usually set to the name of the output file without extension.
+
+## Ada
+
+Detection
+:   A project compiled as Ada source code, if a file with name
+    `${masysma.target}.adb` can be found.
+
+Compilation
+:   Ada compilation is performed by invoking the `gnatmake` utility.
+
+Example
+:   See [ma_capsblinker(11)](../11/ma_capsblinker.xhtml).
+
+No language-specific properties defined. `masysma.target` refers to the output
+executable file to produce.
 
 ## C
 
-	masysma.c.standard
-	masysma.c.link.1
+Detection
+:   C compilation is detected by the existency of any `.c` file in the
+    `${basedir}`.
+
+Compilation
+:   Compilation for C projects consists of two separate invocations:
+
+ 1. Compilation of the individual `.c` files with
+    `gcc -Wall -pedantic -std=c89 -O3 FILE.c`
+ 2. Linking of all `.o` files with
+    `gcc -o ${masysma.target} *.o`
+
+Example
+:   See [progress(32)](progress.xhtml), especially the _Progress 2 C_ variant.
+
+Properties to influence compilation are described in the following:
+
+`masysma.c.standard`
+:   Sets a different value for the `-std=` flag. Default: `c89`.
+`masysma.c.link.1` and `masysma.c.link.2`
+:   Sets additional arguments to pass to the final/linking `gcc` invocation.
+    These are added as-is to the commandline if they have a value different
+    from the empty string. Example: `-lpthread`. Currently, the number of
+    such arguments is limted to 2, but of course, it is possible to increase
+    that if more are needed in the future.
+
+## Java
+
+_TODO MORE DOCUMENTATION TO FOLLOW_
 
 Use in Projects with multiple Programming Languages
 ===================================================

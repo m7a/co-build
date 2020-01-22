@@ -186,8 +186,10 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 		<apply executable="gcc" failonerror="true" parallel="true">
 			<arg value="-o"/>
 			<arg value="${masysma.target}"/>
-			<arg value="${masysma.c.link.1}" unless:blank="${masysma.c.link.1}"/>
-			<arg value="${masysma.c.link.2}" unless:blank="${masysma.c.link.2}"/>
+			<arg value="${masysma.c.link.1}"
+					unless:blank="${masysma.c.link.1}"/>
+			<arg value="${masysma.c.link.2}"
+					unless:blank="${masysma.c.link.2}"/>
 			<srcfile/>
 			<fileset dir="." includes="*.o"/>
 		</apply>
