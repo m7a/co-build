@@ -33,6 +33,8 @@
 		mdpc.file.install
 		mdpc.file.displace
 
+		mdpc.add.rules
+
 		== BUILD SYSTEM ==
 
 		Languages
@@ -152,6 +154,8 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	</target>
 	<target name="masysma_hook_c_predep"/>
 	<property name="masysma.c.standard" value="c89"/>
+	<property name="masysma.c.compile.1" value=""/>
+	<property name="masysma.c.compile.2" value=""/>
 	<target name="masysma_internal_compile_c"
 					depends="masysma_internal_check_c,
 						masysma_hook_c_predep"
@@ -162,6 +166,10 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 			<arg value="-pedantic"/>
 			<arg value="-std=${masysma.c.standard}"/>
 			<arg value="-O3"/>
+			<arg value="${masysma.c.compile.1}"
+					unless:blank="${masysma.c.compile.1}"/>
+			<arg value="${masysma.c.compile.2}"
+					unless:blank="${masysma.c.compile.2}"/>
 			<arg value="-c"/>
 			<!--
 				Note that while this would have been expected
@@ -478,6 +486,9 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 		<property name="mdpc.internal.absoluteincludepath"
 				location="${masysma.internal.includepath}"/>
 
+		<property name="mdpc.add.rules.rules" value=""
+						unless:set="mdpc.add.rules"/>
+
 		<mkdir dir="${mdpc.internal.pkgtmp}/debian/source"/>
 		<echo file="${mdpc.internal.pkgtmp}/debian/compat">9</echo>
 		<echo file="${mdpc.internal.pkgtmp}/debian/source/format"
@@ -489,6 +500,8 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 <!-- BEGIN FORMAT PRESERVED AREA -->
 		<echo file="${mdpc.internal.pkgtmp}/debian/rules"
 >#!/usr/bin/make -f
+${mdpc.add.rules}
+
 %:
 	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@ --with=config-package</echo>
 		<chmod file="${mdpc.internal.pkgtmp}/debian/rules" perm="755"/>

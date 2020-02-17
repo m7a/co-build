@@ -8,6 +8,7 @@ author: ["Linux-Fan, Ma_Sys.ma (Ma_Sys.ma@web.de)"]
 keywords: ["ant", "make", "build", "masysmaci", "template", "ant_build_template", "ant-build-template.xml"]
 x-masysma-version: 1.0.0
 x-masysma-repository: https://www.github.com/m7a/co-build
+x-masysma-website: https://masysma.lima-city.de/32/masysmaci_build.xhtml
 x-masysma-owned: 1
 x-masysma-copyright: |
   Copyright (c) 2019, 2020 Ma_Sys.ma.
@@ -189,6 +190,10 @@ Properties to influence compilation are described in the following:
 
 `masysma.c.standard`
 :   Sets a different value for the `-std=` flag. Default: `c89`.
+`masysma.c.compile.1` and `masysma.c.compile.2`
+:   Sets additional arguments to pass to the compiler invocation.
+    The use of this properties is similar to `masysma.c.link.X` explained
+    below.
 `masysma.c.link.1` and `masysma.c.link.2`
 :   Sets additional arguments to pass to the final/linking `gcc` invocation.
     These are added as-is to the commandline if they have a value different
@@ -197,6 +202,50 @@ Properties to influence compilation are described in the following:
     that if more are needed in the future.
 
 ## Java
+
+Detection
+:   Java compilation is assumed if any `.java` files are found in the file
+    tree (below the `build.xml`'s directory).
+
+Compilation
+:   All files are compiled including debug information and with
+    `-Xlint:unchecked`. To invoke `javac`, ant's Javac task is instantiated.
+
+To generate `.jar` files, target `jar` is provided. By default, all files from
+directory `ma` are included in the jarfile. The name of the jarfile is derived
+from `masysma.target` by appending suffix `.jar`.
+
+Example
+:   See [gamuhr(32)](gamuhr.xhtml) for basic compilation.
+    See [progress(32)](progress.xhtml) (subdirectory `progress1`) for an example
+    with classes provided in a directory other than `ma`.
+
+Relevant properties for Java compilation are as follows:
+
+`masysma.main`
+:   Defines the main-class (only relevant in conjunction with target `jar`).
+
+Aside from properties, there are further settings that can be tuned for
+compilation.
+
+`masysma.inccls` (fileset)
+:   This fileset defines the list of files to include in the jarfile. By
+    default, all files from below directory `ma` are included which means
+    sources (`.java`), classes (`.class`) along with any other files the
+    application might consider resources (e.g. `.txt`, `.png`, etc.).
+    Change this setting in case classes are not taken from directory `ma`.
+    Example: `<fileset id="masysma.inccls" dir="." includes="*.class"/>`
+    includes all classfiles from the present working directory (useful for
+    compiling programs which are using the default package).
+    In order for this setting to take effect, it has to be specified after
+    importing the template i.e. near the end of the `build.xml` file.
+
+`masysma.classpath` (path)
+:   This path defines the locations to look for classes (only relevant for
+    compilation). By default, the `build.xml`'s directory and all `.jar` files
+    from below a directory called `lib` are included.
+
+## LaTeX
 
 _TODO MORE DOCUMENTATION TO FOLLOW_
 
