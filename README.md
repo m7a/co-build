@@ -247,7 +247,27 @@ compilation.
 
 ## LaTeX
 
-_TODO MORE DOCUMENTATION TO FOLLOW_
+As LaTeX compilation may require multiple stages, the compilation is invoked
+repeatedly until `Rerun to` no longer appears in the output. Additionally,
+`bibtex8` is automatically invoked if file `literature.bib` exists. The `.tex`
+file to compile is expected to have its name equal to the value of
+property `masysma.target` followed by `.tex`. Task `clean` attempts to delete
+most files created along with the `.aux` file for the respective source file.
+Note that builds of multiple `.tex` files are only supported as far as they are
+included with `\input`, because auxiliary files created by inclusion of other
+`.tex` files are not cleaned up by default.
+
+Detection
+:   LaTeX compilation is invoked if a file called `${masysma.target}.tex`
+    exists.
+
+Compilation
+:   Compilation currently uses a fixed set of flags and always invokes
+    `pdflatex -halt-on-error -file-line-error -interaction batchmode`.
+    If `literature.tex` exists, BibTeX is invoked with
+    `bibtex8 ${masysma.target}`.
+
+_TODO z: Currently, no example is provided._
 
 Use in Projects with multiple Programming Languages
 ===================================================
