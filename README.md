@@ -5,7 +5,7 @@ title: Ant Build Template
 date: 2019/12/06 13:16:32
 lang: en-US
 author: ["Linux-Fan, Ma_Sys.ma (Ma_Sys.ma@web.de)"]
-keywords: ["ant", "make", "build", "masysmaci", "template", "ant_build_template", "ant-build-template.xml"]
+keywords: ["ant", "make", "build", "masysmaci", "template", "ant_build_template", "ant-build-template.xml", "ci"]
 x-masysma-version: 1.0.0
 x-masysma-repository: https://www.github.com/m7a/co-build
 x-masysma-website: https://masysma.lima-city.de/32/masysmaci_build.xhtml
