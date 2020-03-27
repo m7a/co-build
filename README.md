@@ -375,7 +375,7 @@ This section lists the most commonly needed MDPC 2 properties.
     `misc`, `net`, `science`, `shells`, `tex`, `text`, `utils`, `web`, `x11`
 
 `mdpc.maintainer` (default: `Linux-Fan, Ma_Sys.ma <Ma_Sys.ma@web.de>`)
-:   Declares teh package's maintainer.
+:   Declares the package's maintainer.
 
 ## License Metadata
 
