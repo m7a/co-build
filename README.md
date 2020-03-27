@@ -14,11 +14,6 @@ x-masysma-copyright: |
   Copyright (c) 2019, 2020 Ma_Sys.ma.
   For further info send an e-mail to Ma_Sys.ma@web.de.
 ---
-WARNING: EXPERIMENTAL CODE
-==========================
-
-**THIS IS HIGHLY EXPERIMENTAL AND UNDER DEVELOPMENT**
-
 Overview
 ========
 
@@ -269,17 +264,194 @@ Compilation
 
 _TODO z: Currently, no example is provided._
 
-Use in Projects with multiple Programming Languages
-===================================================
+Use in Projects with multiple Parts
+===================================
 
-_TODO NO CONTENT ON THIS YET_
+To build a project with multiple programming languages or parts, create
+distinct subdirectories for each of the individual build configurations.
+Inside them, provide individual `build.xml` files. These may use the template
+as explained before except that the relative location of file
+`ant-build-template.xml` may be one directory farther upwards. To apply this
+change, edit the following line from the template:
+
+~~~{.xml}
+<condition property="masysma.internal.includepath.rel" value="${env.MDVL_CI_PHOENIX_ROOT}" else=".."><isset property="env.MDVL_CI_PHOENIX_ROOT"/></condition>
+~~~
+
+and change it to this:
+
+~~~{.xml}
+<condition property="masysma.internal.includepath.rel" value="${env.MDVL_CI_PHOENIX_ROOT}" else="../.."><isset property="env.MDVL_CI_PHOENIX_ROOT"/></condition>
+~~~
+
+The resulting structure behaves like a recursive makefile except it is using
+`ant`. Note that the following targets can be invoked on the top-level
+to apply them to all parts: `build`, `clean` and `dist-clean`.
+
+As an example, consider Ma_Sys.ma DirStat [dirstat(32)](dirstat.xhtml), whose
+`build.xml` files are organized as follows to build two distinct subprojects:
+DirStat 1 and DirStat 2.
+
+	/bo-dirstat
+	 |
+	 +-- dirstat1/
+	 |    |
+	 |    +-- build.xml
+	 |
+	 +-- dirstat2/
+	 |    |
+	 |    +-- build.xml
+	 |
+	 +-- build.xml
+
+The top-level `build.xml` uses the template to declare an MDVL pacakge but does
+not itself provide any `masysma.target` definition. The subordinate `build.xml`
+files from the subdirectories are as follows (relevant excerpts shown):
+
+For DirStat 1:
+
+~~~{.xml}
+<property name="masysma.target" value="dirstat1"/> 
+<property name="masysma.main" value="ma.stat.Main"/> 
+~~~
+
+For DirStat 2:
+
+~~~{.xml}
+<property name="masysma.target" value="dirstat2"/> 
+<property name="masysma.main" value="ma.dirstat.Main"/> 
+~~~
+
+Here, both parts are Java projects, but this need not be the case.
+Also, it is not _required_ that the individual parts use the template -- they
+may also consist of standalone ANT `build.xml` files.
 
 MDPC 2.0
 ========
 
+MDPC expands to _Ma_Sys.ma Developer Linux Packaging Control_ and provides a
+means to build Debian-compatible packages in a simplified fashion. To do this,
+it sets defaults for files which would have otherwise to be provided and
+declares ANT properties for relevant fields to fill in for a given package.
+
+MDPC 2 provides the following targets: `package`, `init`, `incver` and a lot
+of properties to declare package metadata which are explained in the following:
+
+## Common Metadata
+
+This section lists the most commonly needed MDPC 2 properties.
+
+`mdpc.name` (required)
+:   Declares the name of the package to build. This will later appear in
+    the installation logs, file name and package search results if queried.
+
+`mdpc.arch` (default: `all`)
+:   Declares the package architecture.
+    `all` means that the package is suited for all architectures (e.g. for
+    portable scripts, this can be the case). `any` declares that the package
+    can be compiled for any architecture, but the resulting binaries are
+    architecture-specific. Apart from these two (very common) options, it is
+    possible to specify an architecture identifier like `amd64`, `armhf`,
+    `i386` etc. directly although this should only be necessary for packages,
+    which rely on pre-built binaries.
+
+`mdpc.descrs` (required)
+:   One-line description of the package.
+
+`mdpc.descrl` (required)
+:   Multi-line description of the package. Note that all lines need to be
+    indented by a single whitespace and “empty” lines are expected to be marked
+    by a single whitespace followed by a dot (` .`).
+
+`mdpc.depends` (default: `${shlibs:Depends}, ${misc:Depends}, ${java:Depends}`)
+:   Declares the package's dependencies in Debian `control` file format
+    (comma-separated). By default, a series of `${...}` attempt to auto-detect
+    some dependencies, but this is known to be incomplete for scripts.
+
+`mdpc.section` (required)
+:   Associates the package with a _section_, which can be one of the following:
+    `admin`, `devel`, `doc`, `editors`, `electronics`, `embedded`, `games`,
+    `graphics`, `httpd`, `interpreters`, `java`, `libs`, `math`, `metapackages`,
+    `misc`, `net`, `science`, `shells`, `tex`, `text`, `utils`, `web`, `x11`
+
+`mdpc.maintainer` (default: `Linux-Fan, Ma_Sys.ma <Ma_Sys.ma@web.de>`)
+:   Declares teh package's maintainer.
+
+## License Metadata
+
+This section explains the licensing-related MDPC 2 properties. It is an intended
+design goal that precise license specifications should be possible with MDPC 2,
+thus there are multiple properties to influence the `copyright` file at
+different levels of granularity.
+
+`mdpc.cpyear` (default: `2020`)
+:   Declares the copyright year range for the current package.
+    For instance, if you develeoped a project from 2018 to 2020, you might
+    set this to `2018, 2019, 2020` etc.
+`mdpc.copyright`
+:   Declares a copyright notice in single-line format.\
+    Default value: `Copyright (c) ${mdpc.cpyear} Ma_Sys.ma <Ma_Sys.ma@web.de>`
+`mdpc.lfiles` (Default: `*`)
+:   Declares the set of files to apply the license inforamtion to.
+`mdpc.lblock` (Default: GPL3+)
+:   Declares a constant license block to use.\
+    Defaults to the license block for _GPL 3 or higher_ which is used with
+    most published Ma_Sys.ma projects.
+`mdpc.copyright.file`
+:   If this property is set, properties `mdpc.cpyear`, `mdpc.copyright` and
+    `mdpc.lblock` are ignored unless explicitly referenced. This provides the
+    raw contents of a Debian `copyright` file allowing for external projects and
+    their licenses to be added or for a different choice of license from GPL3+:
+    If this property is not set, a `copyright` file will be generated from
+    `mdpc.cpyear` and `mdpc.copyright` properties and it will set the license to
+    the value defined in `mdpc.lblock`
+
+Ma_Sys.ma Note
+:   Ma_Sys.ma code is usually released under _GPL 3 or higher_ and thus if you
+    do not find any copyright information in a Ma_Sys.ma project, try to
+    generate its package and refer to the generated `copyright` information. If
+    you need the license declearation to be more explicit, just send an e-mail
+    to `Ma_Sys.ma@web.de` and suitable annotations may be added to the project
+    under consideration.
+
+## Optional and Special Metadata
+
+`mdpc.bdep` (default: `debhelper (>= 8)`)
+:   Declares the package's build-time dependencies.
+
+`mdpc.priority` (default: `optional`)
+:   Declares the package's priority. Most often, this need not be changed.
+
+`mdpc.recommends` (optional)
+:   Declares recommended dependencies. These need not be installed, but will
+    be installed by default. For the exact meanings, refer to Debian Policy.
+
+`mdpc.conflicts` (optional)
+:   Declares `Conflicts`.
+
+`mdpc.suggests` (optional)
+:   Declares `Suggests`.
+
+## File Properties
+
+Some properties map directly to related Debian files:
+
+ * `mdpc.file.install` -- contents for file `debian/install`.\
+   Default value: `${masysma.target} /usr/bin`
+ * `mdpc.file.displace` -- contents for file `debian/displace` (optional).
+ * `mdpc.add.rules` -- contents to add to `debian/rules` (optional).
+
+## Example
+
+_TODO NO CONTENT ON THIS YET: should include hello world and the lifecycle of using the different init, incver, build comments_
+
+MDVL CI Integration
+===================
+
 _TODO NO CONTENT ON THIS YET_
 
-Maartifact Integration
-======================
+`MDVL_CI_PHOENIX_ROOT`
 
-_TODO NO CONTENT ON THIS YET_
+## Maartifact Integration
+
+## Triggering CI Jobs

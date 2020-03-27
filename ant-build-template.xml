@@ -1,65 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
 
-	<!--
-		TODO provide ant extension points
-
-		== ENV ==
-
-		MDVL_CI_PHOENIX_ROOT
-
-		== PROPERTIES ==
-
-		masysma.target    target to build (required for all but recursive)
-		masysma.main      main class for Java builds (Java JAR build only)
-
-		mdpc.name         REQ name of package to build (mdvl-something)
-		mpdc.arch         all/any/amd64/i386/armhf
-		mdpc.descrs       REQ short
-		mdpc.descrl       REQ long
-		mdpc.depends
-		mdpc.bdep
-		mdpc.recommends
-		mdpc.conflicts
-		mdpc.suggests
-		mdpc.lfiles       license files
-		mdpc.section      REQ admin|devel|doc|editors|electronics|
-					embedded|
-					games|graphics|httpd|interpreters|java|
-					libs|math|misc|net|science|shells|tex|
-					text|utils|web|x11
-		mdpc.cpyear       copyright years
-
-		mdpc.file.install
-		mdpc.file.displace
-
-		mdpc.add.rules
-
-		== BUILD SYSTEM ==
-
-		Languages
-		    Ada
-		    C
-		    Java
-		    LaTeX
-
-		General
-		    build
-		    clean
-		    dist-clean
-		    txz           CLASSPATH=/usr/share/java/xz.jar ant txz
-
-		== MDPC 2 ==
-
-		package
-		incver
-		init     := create first changelog.
-
-		== CI ==
-
-		trigger
-	-->
-
 	<!-- Defaults are currently Ma_Sys.ma specific -->
 	<property name="mdpc.maintainer"
 			value="Linux-Fan, Ma_Sys.ma &lt;Ma_Sys.ma@web.de&gt;"/>
