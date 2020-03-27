@@ -55,6 +55,9 @@
 		incver
 		init     := create first changelog.
 
+		== CI ==
+
+		trigger
 	-->
 
 	<!-- Defaults are currently Ma_Sys.ma specific -->
@@ -98,7 +101,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<property name="masysma.java.filepaths" value="ma"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.3 / MDPC 2.0</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.4 / MDPC 2.0</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -571,6 +574,24 @@ ${mdpc.copyright.file}</echo>
 	<!-- =============================================================== -->
 	<!-- ==================================================== MDVL CI == -->
 	<!-- =============================================================== -->
+
+	<target name="trigger">
+		<dirname property="mdpc.internal.repodir" file="${ant.file}"/>
+		<basename property="mdpc.internal.repodirname"
+					file="${mdpc.internal.repodir}"/>
+		<tempfile deleteonexit="true" property="mdpc.internal.resp"/>
+		<property name="mdpc.internal.ttarget" value="/${mdpc.ttarget}"
+						if:set="mdpc.ttarget"/>
+		<property name="mdpc.internal.ttarget" value=""
+						unless:set="mdpc.ttarget"/>
+		<get src="http://127.0.0.1:9030/build/${mdpc.internal.repodirname}${mdpc.internal.ttarget}"
+						dest="${mdpc.internal.resp}">
+			<header name="x-masysma-post" value="1"/>
+		</get>
+		<loadfile property="mdpc.internal.response"
+					srcFile="${mdpc.internal.resp}"/>
+		<echo>${mdpc.internal.response}</echo>
+	</target>
 
 	<macrodef name="masysma_require_repo">
 		<attribute name="masysmarepoid"/>
