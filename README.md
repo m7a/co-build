@@ -1,11 +1,11 @@
 ---
 section: 32
 x-masysma-name: masysmaci/build
-title: Ant Build Template
+title: Ma_Sys.ma Build -- Ant Build Template
 date: 2019/12/06 13:16:32
 lang: en-US
 author: ["Linux-Fan, Ma_Sys.ma (Ma_Sys.ma@web.de)"]
-keywords: ["ant", "make", "build", "masysmaci", "template", "ant_build_template", "ant-build-template.xml", "ci"]
+keywords: ["ant", "mdpc2", "make", "build", "masysmaci", "template", "ant_build_template", "ant-build-template.xml", "ci"]
 x-masysma-version: 1.0.0
 x-masysma-repository: https://www.github.com/m7a/co-build
 x-masysma-website: https://masysma.lima-city.de/32/masysmaci_build.xhtml
@@ -17,11 +17,11 @@ x-masysma-copyright: |
 Overview
 ========
 
-The Ma_Sys.ma _Ant Build Template_ is an attempt to provide a single unifying
-`build.xml` for the Ant build system which allows compiling most Ma_Sys.ma
-Programs with only minor modifications and which provides extended functionality
-to generate Debian Packages. This replaces large parts of the formerly used
-MDPC scripts and the previously used Makefile templates.
+The _Ma_Sys.ma Build_ is an attempt to provide a single unifying `build.xml` for
+the Ant build system which allows compiling most Ma_Sys.ma programs with only
+minor modifications and which provides extended functionality to generate Debian
+packages. This replaces large parts of the formerly used MDPC scripts and the
+previously used Makefile templates.
 
 In addition to being a template, this is designed to facilitate _code reuse_ by
 not being copied upon use, but rather _imported_. E.g. this XML can be loaded
@@ -47,26 +47,30 @@ The following targets/functionalities are generally available.
 `build`
 :   This target compiles the project.
 `jar`
-:   If it is a Java project, `jar` builds a Jarfile if possible.
+:   If it is a Java project, `jar` builds a jarfile if possible.
 `clean`
-:   Deletes object files i.e. all generated except for the linked build result.
+:   Deletes object files i.e. everything generated except for the linked build
+    result.
 `dist-clean`
 :   Deletes all generated files including the linked build result.
 
-If a project is intended to be built in form of a Debian package, these
+If a project is intended to be built in form of a Debian package, this
 additional target can be invoked:
 
 `package`
 :   Build a Debian package for this project.
 
 For development purposes, the following targets allow managing the state of
-the package.
+a package:
 
 `init`
 :   Initializes a changelog.
 `incver`
 :   Interactively invoke the VIM editor to add a changelog entry
     (for an incremented version).
+`trigger`
+:   Ma_Sys.ma CI Integration: Trigger invoking CI targets by connecting to a
+    locally running Ma_Sys.ma CI instance (`http://127.0.0.1:9030`).
 
 Using the Template
 ==================
@@ -262,8 +266,6 @@ Compilation
     If `literature.tex` exists, BibTeX is invoked with
     `bibtex8 ${masysma.target}`.
 
-_TODO z: Currently, no example is provided._
-
 Use in Projects with multiple Parts
 ===================================
 
@@ -324,18 +326,23 @@ For DirStat 2:
 
 Here, both parts are Java projects, but this need not be the case.
 Also, it is not _required_ that the individual parts use the template -- they
-may also consist of standalone ANT `build.xml` files.
+may also consist of standalone Ant `build.xml` files.
 
 MDPC 2.0
 ========
 
 MDPC expands to _Ma_Sys.ma Developer Linux Packaging Control_ and provides a
-means to build Debian-compatible packages in a simplified fashion. To do this,
-it sets defaults for files which would have otherwise to be provided and
-declares ANT properties for relevant fields to fill in for a given package.
+means to build Debian-compatible packages in a simplified fashion.
 
-MDPC 2 provides the following targets: `package`, `init`, `incver` and a lot
-of properties to declare package metadata which are explained in the following:
+The first version was published on the debian-user mailinglist
+<https://lists.debian.org/debian-user/2013/08/msg00042.html> and consists of
+a series of shell scripts. The new version is (partially) integrated with
+Ma_Sys.ma Build and relies on Ant instead of shell scripts.
+
+MDPC 2 sets defaults for files which would have otherwise to be provided
+explicitly and declares Ant properties for relevant fields to fill in for a
+given package. It provides the following targets: `package`, `init`, `incver`.
+The properties to declare package metadata are explained in the following.
 
 ## Common Metadata
 
@@ -416,6 +423,8 @@ Ma_Sys.ma Note
 
 ## Optional and Special Metadata
 
+Here are some special-purpose and rarely needed properties.
+
 `mdpc.bdep` (default: `debhelper (>= 8)`)
 :   Declares the package's build-time dependencies.
 
@@ -443,15 +452,154 @@ Some properties map directly to related Debian files:
 
 ## Example
 
-_TODO NO CONTENT ON THIS YET: should include hello world and the lifecycle of using the different init, incver, build comments_
+As an example, consider creating a simple _Hello World_ package.
+Initially, it has just these two files:
 
-MDVL CI Integration
-===================
+	hello/
+	 |
+	 +-- hello.c
+	 |
+	 +-- build.xml
 
-_TODO NO CONTENT ON THIS YET_
+`hello.c` is a minimal C program:
 
-`MDVL_CI_PHOENIX_ROOT`
+~~~{.c}
+#include <stdio.h>
+int main(int argc, char** argv)
+{
+	printf("Hello world.\n");
+	return 0;
+}
+~~~
 
-## Maartifact Integration
+`build.xml` is as follows:
 
-## Triggering CI Jobs
+~~~{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="build">
+
+<!-- APPLICATION METADATA -->
+<property name="masysma.target" value="hello"/> 
+<property name="mdpc.name"      value="mdvl-hello"/>
+<property name="mdpc.section"   value="misc"/>
+<property name="mdpc.descrs"    value="Hello Package"/>
+<property name="mdpc.arch"      value="any"/>
+<property name="mdpc.descrl">
+ This is the hello package.
+</property>
+
+<!-- CONSTANT TPL IMPORT -->
+<property environment="env"/>
+<condition property="masysma.internal.includepath.rel" value="${env.MDVL_CI_PHOENIX_ROOT}" else=".."><isset property="env.MDVL_CI_PHOENIX_ROOT"/></condition>
+<property name="masysma.internal.includepath" location="${masysma.internal.includepath.rel}"/>
+<property name="masysma.internal.loadpath" value="${masysma.internal.includepath}/co-build/ant-build-template.xml"/>
+<condition property="masysma.internal.load" value="file://${masysma.internal.loadpath}" else="https://raw.githubusercontent.com/m7a/co-build/master/ant-build-template.xml"><resourceexists><file file="${masysma.internal.loadpath}"/></resourceexists></condition>
+<import><url url="${masysma.internal.load}"/></import>
+
+</project>
+~~~
+
+To perform the first build of a package it is necessary to provide a
+`debian-changelog.txt`. To create this file, target `init` can be used as
+follows: `ant init`. Afterwards, there are three files:
+
+	hello/
+	 |
+	 +-- hello.c
+	 |
+	 +-- debian-changelog.txt
+	 |
+	 +-- build.xml
+
+The new file's contents are as follows:
+
+~~~
+mdvl-hello (1.0.0) stable; urgency=medium
+
+  * Package created with MDPC 2
+
+ -- Linux-Fan, Ma_Sys.ma <Ma_Sys.ma@web.de>  Sat, 28 Mar 2020 16:51:28 +0100
+~~~
+
+See [documentation on `debian/changelog`](https://www.debian.org/doc/manuals/maint-guide/dreq.en.html#changelog)
+for hints on the format of the file. Having established this directory
+structure, one can call `ant build` to create the associated package file.
+If the package is intended to be uprgraded to a new version, target `incver`
+can be invoked before performing the package build.
+
+Ma_Sys.ma-supplied packages already contain a `debian-changelog.txt` which means
+it is sufficient to invoke `build` only to generate their package files.
+
+Downloading Artifacts
+=====================
+
+In case external dependencies are needed for a build, Ma_Sys.ma Build allows
+downloading Git repositories and artifacts.
+
+## Downloading Ma_Sys.ma Git Repositories
+
+A downloaded Git repository is stored one next to the repository's directory.
+The mechanism is invoked as follows (example):
+
+~~~{.xml}
+<masysma_require_repo masysmarepoid="co-maartifact"/>
+~~~
+
+The repository name is given in attribute `masysmarepoid`.
+
+Note that this is specific to Ma_Sys.ma Repositories, i.e. prefix
+`https://github.com/m7a`. To use this mechanism for your own repositories, you
+could create a modified copy of the build template and change the attribute name
+and base URL in `ant-build-template.xml`. Alternatively, consider using the more
+versatile `masysma_require_artifact` element described in the next section.
+
+An advanced example for using the mechanism to download a required library
+can be found in `ma_inventory_barcodegensvg/build.xml` from the
+[ma_inventory(32)](ma_inventory.xhtml) repository.
+
+## Downloading Artifacts -- maartifact Integration
+
+[maartifact(11)](../11/maartifact.xhtml) can be invoked from Ma_Sys.ma Build
+targets by using the specifically provided `masysma_require_artifact` element.
+If not already available, `maartifact` is downloaded using the Git download
+mechanism explained before.
+
+As an example, consider the following excerpt from `build.xml` of repository
+`bp-jexer`:
+
+~~~{.xml}
+<target name="download">
+	<masysma_require_artifact
+			masysmaartifact="jexer.git"
+			masysmaatarget="build"
+			masysmaadef="https://gitlab.com/klamonte/jexer.git/"/>
+</target>
+~~~
+
+Here, the repository specified under `masysmaadef` is downlaoded to directory
+`build`. The name given under `masysmaartifact` serves to identify the
+downloaded resource among all downloaded artifacts such that the download only
+needs to happen on first use.
+
+This XML specification of an artifact corresponds to the following `maartifact`
+commandline invocation (`@...` refers to the value of attribute `...`):
+
+	maartifact extract @masysmaartifact @masysmaartarget @masysmaadef
+
+See [maartifact(11)](../11/maartifact.xhtml) for further documentation on the
+use of `maartifact`.
+
+Ma_Sys.ma CI Integration
+========================
+
+Ma_Sys.ma Build integrates with _Ma_Sys.ma CI_ in multiple ways. On the most
+basic level, data from `build.xml` and `debian-changelog.txt` files is used to
+register a repository for processing by the Ma_Sys.ma CI. Additionally, it is
+possible to use target `trigger` to trigger a CI build in a Ma_Sys.ma CI
+instance running on the local host port 9030.
+
+Two modes of invocation are possible:
+
+ 1. `ant trigger` -- triggers all associated CI jobs.
+ 2. `ant trigger -Dmdpc.ttarget=...` --
+    triggers a specific CI target as given after the `=` sign.
