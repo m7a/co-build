@@ -42,7 +42,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<property name="masysma.java.filepaths" value="ma"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.5 / MDPC 2.0</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.6 / MDPC 2.0</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -459,8 +459,7 @@ Package: ${mdpc.name}
 Architecture: ${mdpc.arch}
 Depends: ${mdpc.depends}${mdpc.internal.recommends}${mdpc.internal.suggests}${mdpc.internal.conflicts}
 Description: ${mdpc.descrs}${mdpc.descrl}</echo>
-		<echo file="${mdpc.internal.pkgtmp}/debian/copyright"
->Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+		<echo file="${mdpc.internal.pkgtmp}/debian/copyright" encoding="UTF-8">Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 ${mdpc.copyright.file}</echo>
 		<echo file="${mdpc.internal.pkgtmp}/debian/${mdpc.name}.install"
 >${mdpc.file.install}</echo>
