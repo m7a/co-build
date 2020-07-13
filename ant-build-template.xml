@@ -42,7 +42,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<property name="masysma.java.filepaths" value="ma"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.6 / MDPC 2.0</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.7 / MDPC 2.0</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -549,14 +549,15 @@ ${mdpc.copyright.file}</echo>
 	</macrodef>
 
 	<macrodef name="masysma_require_artifact">
+		<attribute name="masysmaaction" default="extract"/>
 		<attribute name="masysmaartifact"/>
 		<attribute name="masysmaatarget"/>
-		<attribute name="masysmaadef"/>
+		<attribute name="masysmaadef" default=""/>
 		<sequential>
 			<masysma_require_repo masysmarepoid="co-maartifact"/>
 			<exec executable="perl" failonerror="true">
 				<arg value="${masysma.internal.includepath}/co-maartifact/maartifact.pl"/>
-				<arg value="extract"/>
+				<arg value="@{masysmaaction}"/>
 				<arg value="@{masysmaartifact}"/>
 				<arg value="@{masysmaatarget}"/>
 				<arg value="@{masysmaadef}"/>

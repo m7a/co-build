@@ -586,6 +586,9 @@ commandline invocation (`@...` refers to the value of attribute `...`):
 
 	maartifact extract @masysmaartifact @masysmaartarget @masysmaadef
 
+As an alternative to `extract`, a custom action can be specified by attribute
+`masysmaaction`.
+
 See [maartifact(11)](../11/maartifact.xhtml) for further documentation on the
 use of `maartifact`.
 
