@@ -42,7 +42,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<property name="masysma.java.filepaths" value="ma"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.8 / MDPC 2.0</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.9 / MDPC 2.0</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -184,7 +184,8 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 						masysma_hook_java_predep"
 					if="masysma.internal.java.present">
 		<javac debug="true" includeantruntime="false" srcdir="."
-				encoding="UTF-8" if:set="masysma.target">
+				encoding="UTF-8" if:set="masysma.target"
+				excludes="dev/**,xdev/**,x_dev/**,xond/**">
 			<classpath refid="masysma.classpath"/>
 			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
