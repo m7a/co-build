@@ -217,10 +217,11 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<!-- ========================================== LaTeX compilation == -->
 	<!-- =============================================================== -->
 
+	<property name="masysma.texcmd" value="pdflatex"/>
 	<macrodef name="masysma_internal_texrun">
 		<attribute name="nextnr"/>
 		<sequential>
-			<exec executable="pdflatex" failonerror="true">
+			<exec executable="${masysma.texcmd}" failonerror="true">
 				<arg value="-halt-on-error"/>
 				<arg value="-file-line-error"/>
 				<arg value="-interaction"/>

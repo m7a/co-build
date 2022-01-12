@@ -523,12 +523,12 @@ mdvl-hello (1.0.0) stable; urgency=medium
 
 See [documentation on `debian/changelog`](https://www.debian.org/doc/manuals/maint-guide/dreq.en.html#changelog)
 for hints on the format of the file. Having established this directory
-structure, one can call `ant build` to create the associated package file.
+structure, one can call `ant package` to create the associated package file.
 If the package is intended to be upgraded to a new version, target `incver`
 can be invoked before performing the package build.
 
 Ma_Sys.ma-supplied packages already contain a `debian-changelog.txt` which means
-it is sufficient to invoke `build` only to generate their package files.
+it is sufficient to invoke `ant package` only to generate their package files.
 
 Downloading Artifacts
 =====================
