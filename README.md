@@ -391,7 +391,7 @@ design goal that precise license specifications should be possible with MDPC 2,
 thus there are multiple properties to influence the `copyright` file at
 different levels of granularity.
 
-`mdpc.cpyear` (default: `2020`)
+`mdpc.cpyear` (default: `2022`)
 :   Declares the copyright year range for the current package.
     For instance, if you develeoped a project from 2018 to 2020, you might
     set this to `2018, 2019, 2020` etc.
@@ -610,7 +610,8 @@ Two modes of invocation are possible:
 License
 =======
 
-	Ma_Sys.ma Build Ant Build Template, Copyright (c) 2019, 2020 Ma_Sys.ma.
+	Ma_Sys.ma Build Ant Build Template,
+	Copyright (c) 2019, 2020, 2022 Ma_Sys.ma.
 	For further info send an e-mail to Ma_Sys.ma@web.de.
 	
 	This program is free software: you can redistribute it and/or modify

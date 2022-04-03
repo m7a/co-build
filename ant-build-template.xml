@@ -9,7 +9,7 @@
 	<property name="mdpc.depends"
 		value="$${shlibs:Depends}, $${misc:Depends}, $${java:Depends}"/>
 	<property name="mdpc.arch" value="all"/>
-	<property name="mdpc.cpyear" value="2020"/>
+	<property name="mdpc.cpyear" value="2022"/>
 	<property name="mdpc.copyright"
 		value="Copyright (c) ${mdpc.cpyear} Ma_Sys.ma &lt;Ma_Sys.ma@web.de&gt;"/>
 	<property name="mdpc.lfiles" value="*"/>
@@ -42,7 +42,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<property name="masysma.java.filepaths" value="ma"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.9 / MDPC 2.0</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.10 / MDPC 2.0</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -555,6 +555,7 @@ ${mdpc.copyright.file}</echo>
 		<attribute name="masysmaartifact"/>
 		<attribute name="masysmaatarget"/>
 		<attribute name="masysmaadef" default=""/>
+		<attribute name="masysmaabranch" default="master"/>
 		<sequential>
 			<masysma_require_repo masysmarepoid="co-maartifact"/>
 			<exec executable="perl" failonerror="true">
@@ -562,6 +563,10 @@ ${mdpc.copyright.file}</echo>
 				<arg value="@{masysmaaction}"/>
 				<arg value="@{masysmaartifact}"/>
 				<arg value="@{masysmaatarget}"/>
+				<!-- specifying branch for non-git
+				     targets will not cause problems.  -->
+				<arg value="-b"/>
+				<arg value="@{masysmaabranch}"/>
 				<arg value="@{masysmaadef}"/>
 			</exec>
 		</sequential>
