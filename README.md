@@ -6,12 +6,12 @@ date: 2019/12/06 13:16:32
 lang: en-US
 author: ["Linux-Fan, Ma_Sys.ma (Ma_Sys.ma@web.de)"]
 keywords: ["ant", "mdpc2", "make", "build", "masysmaci", "template", "ant_build_template", "ant-build-template.xml", "ci"]
-x-masysma-version: 1.0.0
+x-masysma-version: 1.0.1
 x-masysma-repository: https://www.github.com/m7a/co-build
 x-masysma-website: https://masysma.lima-city.de/32/masysmaci_build.xhtml
 x-masysma-owned: 1
 x-masysma-copyright: |
-  Copyright (c) 2019, 2020 Ma_Sys.ma.
+  Copyright (c) 2019, 2020, 2022 Ma_Sys.ma.
   For further info send an e-mail to Ma_Sys.ma@web.de.
 ---
 Overview
@@ -584,10 +584,10 @@ needs to happen on first use.
 This XML specification of an artifact corresponds to the following `maartifact`
 commandline invocation (`@...` refers to the value of attribute `...`):
 
-	maartifact extract @masysmaartifact @masysmaartarget @masysmaadef
+	maartifact @masysmaaction @masysmaartifact @masysmaartarget -b @masysmaabranch @masysmaadef
 
-As an alternative to `extract`, a custom action can be specified by attribute
-`masysmaaction`.
+In the invocation, `@masysmaaction` defaults to `extract` and
+`@masysmaabranch` defaults to `master`.
 
 See [maartifact(11)](../11/maartifact.xhtml) for further documentation on the
 use of `maartifact`.

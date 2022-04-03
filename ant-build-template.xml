@@ -3,9 +3,10 @@
 
 	<!-- Defaults are currently Ma_Sys.ma specific -->
 	<property name="mdpc.maintainer"
-			value="Linux-Fan, Ma_Sys.ma &lt;Ma_Sys.ma@web.de&gt;"/>
+			value="Ma_Sys.ma Linux-Fan &lt;Ma_Sys.ma@web.de&gt;"/>
 	<property name="mdpc.priority" value="optional"/>
-	<property name="mdpc.bdep" value="debhelper (>= 8)"/>
+	<property name="mdpc.bdep"
+			value="debhelper (>= 8), config-package-dev"/>
 	<property name="mdpc.depends"
 		value="$${shlibs:Depends}, $${misc:Depends}, $${java:Depends}"/>
 	<property name="mdpc.arch" value="all"/>
@@ -42,7 +43,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<property name="masysma.java.filepaths" value="ma"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.10 / MDPC 2.0</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.11 / MDPC 2.0</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -434,7 +435,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 						unless:set="mdpc.add.rules"/>
 
 		<mkdir dir="${mdpc.internal.pkgtmp}/debian/source"/>
-		<echo file="${mdpc.internal.pkgtmp}/debian/compat">9</echo>
+		<echo file="${mdpc.internal.pkgtmp}/debian/compat">10</echo>
 		<echo file="${mdpc.internal.pkgtmp}/debian/source/format"
 						>3.0 (native)</echo>
 		<echo if:set="mdpc.file.displace"
@@ -447,7 +448,8 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 ${mdpc.add.rules}
 
 %:
-	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@ --with=config-package</echo>
+	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@ --with=config-package
+</echo>
 		<chmod file="${mdpc.internal.pkgtmp}/debian/rules" perm="755"/>
 		<echo file="${mdpc.internal.pkgtmp}/debian/control"
 >Source: ${mdpc.name}
