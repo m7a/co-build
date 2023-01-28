@@ -3,16 +3,15 @@
 
 	<!-- Defaults are currently Ma_Sys.ma specific -->
 	<property name="mdpc.maintainer"
-			value="Ma_Sys.ma Linux-Fan &lt;Ma_Sys.ma@web.de&gt;"/>
+			value="Ma_Sys.ma Linux-Fan &lt;info@masysma.net&gt;"/>
 	<property name="mdpc.priority" value="optional"/>
 	<property name="mdpc.bdep"
 			value="debhelper (>= 8), config-package-dev"/>
-	<property name="mdpc.depends"
-		value="$${shlibs:Depends}, $${misc:Depends}, $${java:Depends}"/>
+	<property name="mdpc.depends" value="$${shlibs:Depends}, $${java:Depends}"/>
 	<property name="mdpc.arch" value="all"/>
 	<property name="mdpc.cpyear" value="2022"/>
 	<property name="mdpc.copyright"
-		value="Copyright (c) ${mdpc.cpyear} Ma_Sys.ma &lt;Ma_Sys.ma@web.de&gt;"/>
+		value="(c) ${mdpc.cpyear} Ma_Sys.ma &lt;info@masysma.net&gt;"/>
 	<property name="mdpc.lfiles" value="*"/>
 
 <property name="mdpc.lblock">
@@ -43,7 +42,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<property name="masysma.java.filepaths" value="ma"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.11 / MDPC 2.0</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.13 / MDPC 2.0</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -57,15 +56,28 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<target name="masysma_hook_ada_predep">
 		<!-- can be overriden in importing files -->
 	</target>
+	<property name="masysma.ada.compile.1" value=""/>
+	<property name="masysma.ada.compile.2" value=""/>
+	<property name="masysma.ada.compile.8" value=""/>
+	<property name="masysma.ada.compile.9" value=""/>
 	<target name="masysma_internal_build_ada"
 				depends="masysma_internal_check_ada,
 					masysma_hook_ada_predep"
 				if="masysma.internal.ada.present">
 		<exec executable="gnatmake" failonerror="true">
 			<arg value="-Wall"/>
+			<arg value="-O3"/>
 			<arg value="-o"/>
 			<arg value="${masysma.target}"/>
+			<arg value="${masysma.ada.compile.1}"
+				unless:blank="${masysma.ada.compile.1}"/>
+			<arg value="${masysma.ada.compile.2}"
+				unless:blank="${masysma.ada.compile.2}"/>
 			<arg value="${masysma.target}.adb"/>
+			<arg value="${masysma.ada.compile.8}"
+				unless:blank="${masysma.ada.compile.8}"/>
+			<arg value="${masysma.ada.compile.9}"
+				unless:blank="${masysma.ada.compile.9}"/>
 		</exec>
 	</target>
 	<target name="masysma_internal_clean_ada"
@@ -461,7 +473,7 @@ Build-Depends: ${mdpc.bdep}
 
 Package: ${mdpc.name}
 Architecture: ${mdpc.arch}
-Depends: ${mdpc.depends}${mdpc.internal.recommends}${mdpc.internal.suggests}${mdpc.internal.conflicts}
+Depends: $${misc:Depends}, ${mdpc.depends}${mdpc.internal.recommends}${mdpc.internal.suggests}${mdpc.internal.conflicts}
 Description: ${mdpc.descrs}${mdpc.descrl}</echo>
 		<echo file="${mdpc.internal.pkgtmp}/debian/copyright" encoding="UTF-8">Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 ${mdpc.copyright.file}</echo>

@@ -8,7 +8,7 @@ author: ["Linux-Fan, Ma_Sys.ma (Ma_Sys.ma@web.de)"]
 keywords: ["ant", "mdpc2", "make", "build", "masysmaci", "template", "ant_build_template", "ant-build-template.xml", "ci"]
 x-masysma-version: 1.0.1
 x-masysma-repository: https://www.github.com/m7a/co-build
-x-masysma-website: https://masysma.lima-city.de/32/masysmaci_build.xhtml
+x-masysma-website: https://masysma.net/32/masysmaci_build.xhtml
 x-masysma-owned: 1
 x-masysma-copyright: |
   Copyright (c) 2019, 2020, 2022 Ma_Sys.ma.
