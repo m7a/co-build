@@ -42,7 +42,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<property name="masysma.java.filepaths" value="ma"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.13 / MDPC 2.0</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.14 / MDPC 2.0</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -58,6 +58,8 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	</target>
 	<property name="masysma.ada.compile.1" value=""/>
 	<property name="masysma.ada.compile.2" value=""/>
+	<property name="masysma.ada.compile.6" value=""/>
+	<property name="masysma.ada.compile.7" value=""/>
 	<property name="masysma.ada.compile.8" value=""/>
 	<property name="masysma.ada.compile.9" value=""/>
 	<target name="masysma_internal_build_ada"
@@ -74,6 +76,10 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 			<arg value="${masysma.ada.compile.2}"
 				unless:blank="${masysma.ada.compile.2}"/>
 			<arg value="${masysma.target}.adb"/>
+			<arg value="${masysma.ada.compile.6}"
+				unless:blank="${masysma.ada.compile.6}"/>
+			<arg value="${masysma.ada.compile.7}"
+				unless:blank="${masysma.ada.compile.7}"/>
 			<arg value="${masysma.ada.compile.8}"
 				unless:blank="${masysma.ada.compile.8}"/>
 			<arg value="${masysma.ada.compile.9}"
@@ -445,6 +451,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 
 		<property name="mdpc.add.rules.rules" value=""
 						unless:set="mdpc.add.rules"/>
+		<property name="mdpc.add.dh" value="" unless:set="mdpc.add.dh"/>
 
 		<mkdir dir="${mdpc.internal.pkgtmp}/debian/source"/>
 		<echo file="${mdpc.internal.pkgtmp}/debian/compat">10</echo>
@@ -460,7 +467,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 ${mdpc.add.rules}
 
 %:
-	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@ --with=config-package
+	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@ --with=config-package ${mdpc.add.dh}
 </echo>
 		<chmod file="${mdpc.internal.pkgtmp}/debian/rules" perm="755"/>
 		<echo file="${mdpc.internal.pkgtmp}/debian/control"
