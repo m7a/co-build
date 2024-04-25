@@ -5,11 +5,12 @@
 	<property name="mdpc.maintainer"
 			value="Ma_Sys.ma Linux-Fan &lt;info@masysma.net&gt;"/>
 	<property name="mdpc.priority" value="optional"/>
-	<property name="mdpc.bdep"
+	<property name="mdpc.internal.bdep.default"
 			value="debhelper (>= 8), config-package-dev"/>
+	<property name="mdpc.bdep" value="${mdpc.internal.bdep.default}"/>
 	<property name="mdpc.depends" value="$${shlibs:Depends}, $${java:Depends}"/>
 	<property name="mdpc.arch" value="all"/>
-	<property name="mdpc.cpyear" value="2022"/>
+	<property name="mdpc.cpyear" value="2024"/>
 	<property name="mdpc.copyright"
 		value="(c) ${mdpc.cpyear} Ma_Sys.ma &lt;info@masysma.net&gt;"/>
 	<property name="mdpc.lfiles" value="*"/>
@@ -41,8 +42,10 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 
 	<property name="masysma.java.filepaths" value="ma"/>
 
+	<dirname property="mdpc.internal.repodir" file="${ant.file}"/>
+
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.14 / MDPC 2.0</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.17 / MDPC 2.1</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -58,6 +61,8 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	</target>
 	<property name="masysma.ada.compile.1" value=""/>
 	<property name="masysma.ada.compile.2" value=""/>
+	<property name="masysma.ada.compile.3" value=""/>
+	<property name="masysma.ada.compile.4" value=""/>
 	<property name="masysma.ada.compile.6" value=""/>
 	<property name="masysma.ada.compile.7" value=""/>
 	<property name="masysma.ada.compile.8" value=""/>
@@ -75,6 +80,10 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 				unless:blank="${masysma.ada.compile.1}"/>
 			<arg value="${masysma.ada.compile.2}"
 				unless:blank="${masysma.ada.compile.2}"/>
+			<arg value="${masysma.ada.compile.3}"
+				unless:blank="${masysma.ada.compile.3}"/>
+			<arg value="${masysma.ada.compile.4}"
+				unless:blank="${masysma.ada.compile.4}"/>
 			<arg value="${masysma.target}.adb"/>
 			<arg value="${masysma.ada.compile.6}"
 				unless:blank="${masysma.ada.compile.6}"/>
@@ -157,12 +166,12 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 		<apply executable="gcc" failonerror="true" parallel="true">
 			<arg value="-o"/>
 			<arg value="${masysma.target}"/>
+			<srcfile/>
+			<fileset dir="." includes="*.o"/>
 			<arg value="${masysma.c.link.1}"
 					unless:blank="${masysma.c.link.1}"/>
 			<arg value="${masysma.c.link.2}"
 					unless:blank="${masysma.c.link.2}"/>
-			<srcfile/>
-			<fileset dir="." includes="*.o"/>
 		</apply>
 	</target>
 	<target name="masysma_internal_clean_c"
@@ -449,7 +458,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 		<property name="mdpc.internal.absoluteincludepath"
 				location="${masysma.internal.includepath}"/>
 
-		<property name="mdpc.add.rules.rules" value=""
+		<property name="mdpc.add.rules" value=""
 						unless:set="mdpc.add.rules"/>
 		<property name="mdpc.add.dh" value="" unless:set="mdpc.add.dh"/>
 
@@ -533,11 +542,199 @@ ${mdpc.copyright.file}</echo>
 	</target>
 
 	<!-- =============================================================== -->
+	<!-- ============================== MDVL CI V2 + MDPC Integration == -->
+	<!-- =============================================================== -->
+
+	<target name="masysma_internal_check_cleanpkg">
+		<available file="${mdpc.internal.repodir}/debian-changelog.txt"
+			type="file" property="mdpc.internal.haschangelog"/>
+		<exec executable="git" failonerror="false"
+					outputproperty="mdpc.internal.branch">
+			<arg value="-C"/>
+			<arg value="${mdpc.internal.repodir}"/>
+			<arg value="rev-parse"/>
+			<arg value="--abbrev-ref"/>
+			<arg value="HEAD"/>
+		</exec>
+		<exec executable="git" failonerror="false"
+					outputproperty="mdpc.internal.changes">
+			<arg value="-C"/>
+			<arg value="${mdpc.internal.repodir}"/>
+			<arg value="status"/>
+			<arg value="--porcelain"/>
+		</exec>
+		<condition property="mdpc.internal.check.cleanpkg"
+					if:set="mdpc.internal.haschangelog">
+			<and>
+				<equals arg1="${mdpc.internal.branch}"
+					arg2="master"/>
+				<equals arg1="${mdpc.internal.changes}"
+					arg2=""/>
+			</and>
+		</condition>
+	</target>
+
+	<target name="masysma_internal_check_archcompat"
+				depends="masysma_internal_check_cleanpkg"
+				if="mdpc.internal.check.cleanpkg">
+		<condition property="mdpc.internal.check.archcompat">
+			<or>
+				<equals arg1="${mdpc.arch}" arg2="${os.arch}"/>
+				<and>
+					<equals arg1="${mdpc.arch}" arg2="any"/>
+					<not><equals arg1="${os.arch}"
+						arg2="${mdpc.arch.not}"/></not>
+				</and>
+				<and>
+					<equals arg1="${mdpc.arch}" arg2="all"/>
+					<!--
+						TODO z make this a variable if
+						anybody needs to build on
+						primarily non-amd64 arches
+					-->
+					<equals arg1="${os.arch}" arg2="amd64"/>
+				</and>
+			</or>
+		</condition>
+	</target>
+
+	<target name="masysma_internal_check_versionupdate"
+				depends="masysma_internal_check_archcompat"
+				if="mdpc.internal.check.archcompat">
+		<loadresource property="mdpc.internal.changelogversion">
+			<file file="${mdpc.internal.repodir}/debian-changelog.txt"/>
+			<filterchain>
+				<headfilter lines="1"/>
+				<tokenfilter><replaceregex
+					pattern="^([^ ]+) \(([^)]+)\) .+$"
+					replace="\2"/></tokenfilter>
+				<striplinebreaks/>
+			</filterchain>
+		</loadresource>
+		<condition property="mdpc.internal.usearch">
+			<not><equals arg1="${mdpc.arch}" arg2="all"/></not>
+		</condition>
+		<property name="mdpc.internal.cachedir"
+				value="/tmp/mdpc-cached-repo-responses"/>
+		<property name="mdpc.internal.cachefile" value="${mdpc.internal.cachedir}/${mdpc.name}-${mdpc.arch}-${mdpc.dist}.txt"/>
+		<available file="${mdpc.internal.cachefile}"
+					property="mdpc.internal.hascached"/>
+		<loadresource property="mdpc.internal.repocnt"
+					if:set="mdpc.internal.hascached">
+			<file file="${mdpc.internal.cachefile}"/>
+			<filterchain><striplinebreaks/></filterchain>
+		</loadresource>
+		<exec executable="reprepro" failonerror="false"
+					unless:set="mdpc.internal.hascached">
+			<arg value="-A" if:true="${mdpc.internal.usearch}"/>
+			<arg value="${os.arch}"
+					if:true="${mdpc.internal.usearch}"/>
+			<arg value="-b"/>
+			<arg value="${mdpc.repo}"/>
+			<arg value="list"/>
+			<arg value="${mdpc.dist}"/>
+			<arg value="${mdpc.name}"/>
+			<redirector outputproperty="mdpc.internal.repocnt">
+				<outputfilterchain>
+					<headfilter lines="1"/>
+					<tokenfilter><replaceregex
+						pattern="^[^ ]+: [^ ]+ ([^ ]+)$"
+						replace="\1"/></tokenfilter>
+				</outputfilterchain>
+			</redirector>
+		</exec>
+		<condition property="mdpc.internal.check.versionupdate">
+			<not><equals arg1="${mdpc.internal.repocnt}"
+				arg2="${mdpc.internal.changelogversion}"/></not>
+		</condition>
+		<echo if:true="${mdpc.internal.check.versionupdate}">version update: ${mdpc.internal.repocnt} -&gt; ${mdpc.internal.changelogversion}</echo>
+		<condition property="mdpc.internal.writecache"><and>
+			<isfalse value="${mdpc.internal.check.versionupdate}"/>
+			<not><isset property="mdpc.internal.hascached"/></not>
+		</and></condition>
+		<sequential if:true="${mdpc.internal.writecache}">
+			<mkdir dir="${mdpc.internal.cachedir}"/>
+			<echo file="${mdpc.internal.cachefile}"
+						>${mdpc.internal.repocnt}</echo>
+		</sequential>
+		<delete file="${mdpc.internal.cachefile}"
+				if:true="${mdpc.internal.check.versionupdate}"/>
+	</target>
+
+	<!--
+		TODO z might be interesting to provide users with a means to
+		trigger this themselves (i.e. without having to set
+		check.versionupdate=true manually that is). The way to go about
+		this would be to extract the sequential part to a macro and
+		offer an install_build_dependencies target that calls this
+		macro and also call this macro instead of the sequential in
+		here
+	-->
+	<target name="masysma_internal_install_build_dependencies"
+				depends="masysma_internal_check_versionupdate"
+				if="mdpc.internal.check.versionupdate">
+		<condition property="mdpc.internal.reqbdep">
+			<and>
+				<isset property="mdpc.bdep"/>
+				<not><equals arg1="${mdpc.bdep}"
+				arg2="${mdpc.internal.bdep.default}"/></not>
+			</and>
+		</condition>
+		<sequential if:true="${mdpc.internal.reqbdep}">
+			<loadresource property="mdpc.internal.bdep">
+				<string value="${mdpc.bdep}"/>
+				<filterchain>
+					<striplinebreaks/>
+					<tokenfilter>
+						<replaceregex
+							pattern=" \([^)]+\)"
+							replace="" flags="g"/>
+						<replaceregex pattern=","
+							replace=" " flags="g"/>
+					</tokenfilter>
+				</filterchain>
+			</loadresource>
+			<exec executable="sudo" failonerror="true">
+				<arg value="-n"/>
+				<arg value="apt-get"/>
+				<arg value="update"/>
+			</exec>
+			<exec executable="sudo" failonerror="false"
+					resultproperty="mdpc.internal.bdeprc">
+				<arg value="-n"/>
+				<arg value="apt-get"/>
+				<arg value="-y"/>
+				<arg value="install"/>
+				<arg line="${mdpc.internal.bdep}"/>
+			</exec>
+		</sequential>
+		<condition property="mdpc.bdep.ok">
+			<or>
+				<isfalse value="${mdpc.internal.reqbdep}"/>
+				<and>
+					<isset property="mdpc.internal.bdeprc"/>
+					<equals arg1="${mdpc.internal.bdeprc}"
+						arg2="0"/>
+				</and>
+			</or>
+		</condition>
+		<echo unless:true="${mdpc.bdep.ok}"
+				>build depends not satisfied, skip</echo>
+	</target>
+
+	<!-- requires property mdpc.repo, mdpc.dist -->
+	<target name="autopackage"
+			depends="masysma_internal_install_build_dependencies"
+			if="mdpc.bdep.ok">
+		<antcall target="package"/>
+	</target>
+
+	<!-- =============================================================== -->
 	<!-- ==================================================== MDVL CI == -->
 	<!-- =============================================================== -->
 
+	<!-- TODO DEPRECATED / REMOVE FOR V2.1 -->
 	<target name="trigger">
-		<dirname property="mdpc.internal.repodir" file="${ant.file}"/>
 		<basename property="mdpc.internal.repodirname"
 					file="${mdpc.internal.repodir}"/>
 		<tempfile deleteonexit="true" property="mdpc.internal.resp"/>

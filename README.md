@@ -68,9 +68,9 @@ a package:
 `incver`
 :   Interactively invoke the VIM editor to add a changelog entry
     (for an incremented version).
-`trigger`
-:   Ma_Sys.ma CI Integration: Trigger invoking CI targets by connecting to a
-    locally running Ma_Sys.ma CI instance (`http://127.0.0.1:9030`).
+`autopackage`
+:   Calls `package` target if the package has been updated compared to the
+    repository contents. Installs necessary build dependencies if absent.
 
 Using the Template
 ==================
@@ -595,17 +595,27 @@ use of `maartifact`.
 Ma_Sys.ma CI Integration
 ========================
 
-Ma_Sys.ma Build integrates with _Ma_Sys.ma CI_ in multiple ways. On the most
-basic level, data from `build.xml` and `debian-changelog.txt` files is used to
-register a repository for processing by the Ma_Sys.ma CI. Additionally, it is
-possible to use target `trigger` to trigger a CI build in a Ma_Sys.ma CI
-instance running on the local host port 9030.
+The following targets provide entrypoints for the interaction with the
+_Ma_Sys.ma CI_:
 
-Two modes of invocation are possible:
+`autopackage`
+:   This can be used to trigger an incremental package build
+    i.e. only build the package when it has changed
+`autoci`
+:   By convention, this build is called by the Ma_Sys.ma CI on each
+    iteration (if it is defined in the ant file). A typical integration thus
+    looks as follows in a `build.xml` file:
 
- 1. `ant trigger` -- triggers all associated CI jobs.
- 2. `ant trigger -Dmdpc.ttarget=...` --
-    triggers a specific CI target as given after the `=` sign.
+~~~{.xml}
+<!-- CI INTEGRATION -->
+<target name="autoci" depends="autopackage"/>
+~~~
+
+Future Directions
+=================
+
+The previously offered `trigger` target is up for removal with one of the next
+revisions.
 
 License
 =======
