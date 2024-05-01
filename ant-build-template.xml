@@ -45,7 +45,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<dirname property="mdpc.internal.repodir" file="${ant.file}"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.17 / MDPC 2.1</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.19 / MDPC 2.1</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -476,7 +476,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 ${mdpc.add.rules}
 
 %:
-	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@ --with=config-package ${mdpc.add.dh}
+	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@ ${mdpc.add.dh}
 </echo>
 		<chmod file="${mdpc.internal.pkgtmp}/debian/rules" perm="755"/>
 		<echo file="${mdpc.internal.pkgtmp}/debian/control"
@@ -526,7 +526,9 @@ ${mdpc.copyright.file}</echo>
 			</fileset>
 		</move>
 
-		<delete dir="mdpcpkgtmp"/>
+		<delete dir="mdpcpkgtmp" followSymlinks="false"
+					includeemptydirs="true"
+					removeNotFollowedSymlinks="true"/>
 	</target>
 
 	<target name="incver">
