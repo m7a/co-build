@@ -6,7 +6,7 @@
 			value="Ma_Sys.ma Linux-Fan &lt;info@masysma.net&gt;"/>
 	<property name="mdpc.priority" value="optional"/>
 	<property name="mdpc.internal.bdep.default"
-			value="debhelper (>= 8), config-package-dev"/>
+			value="debhelper-compat (= 13), config-package-dev"/>
 	<property name="mdpc.bdep" value="${mdpc.internal.bdep.default}"/>
 	<property name="mdpc.depends" value="$${shlibs:Depends}, $${java:Depends}"/>
 	<property name="mdpc.arch" value="all"/>
@@ -45,7 +45,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<dirname property="mdpc.internal.repodir" file="${ant.file}"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.19 / MDPC 2.1</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.21 / MDPC 2.1</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -463,7 +463,6 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 		<property name="mdpc.add.dh" value="" unless:set="mdpc.add.dh"/>
 
 		<mkdir dir="${mdpc.internal.pkgtmp}/debian/source"/>
-		<echo file="${mdpc.internal.pkgtmp}/debian/compat">10</echo>
 		<echo file="${mdpc.internal.pkgtmp}/debian/source/format"
 						>3.0 (native)</echo>
 		<echo if:set="mdpc.file.displace"
@@ -476,7 +475,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 ${mdpc.add.rules}
 
 %:
-	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@ ${mdpc.add.dh}
+	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@ --with=config-package ${mdpc.add.dh}
 </echo>
 		<chmod file="${mdpc.internal.pkgtmp}/debian/rules" perm="755"/>
 		<echo file="${mdpc.internal.pkgtmp}/debian/control"
