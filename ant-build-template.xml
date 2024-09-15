@@ -45,7 +45,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<dirname property="mdpc.internal.repodir" file="${ant.file}"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.21 / MDPC 2.1</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.22 / MDPC 2.1</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -527,7 +527,8 @@ ${mdpc.copyright.file}</echo>
 
 		<delete dir="mdpcpkgtmp" followSymlinks="false"
 					includeemptydirs="true"
-					removeNotFollowedSymlinks="true"/>
+					removeNotFollowedSymlinks="true"
+					defaultexcludes="false"/>
 	</target>
 
 	<target name="incver">
@@ -691,6 +692,8 @@ ${mdpc.copyright.file}</echo>
 							pattern=" \([^)]+\)"
 							replace="" flags="g"/>
 						<replaceregex pattern=","
+							replace=" " flags="g"/>
+						<replaceregex pattern="&#009;"
 							replace=" " flags="g"/>
 					</tokenfilter>
 				</filterchain>
