@@ -10,7 +10,7 @@
 	<property name="mdpc.bdep" value="${mdpc.internal.bdep.default}"/>
 	<property name="mdpc.depends" value="$${shlibs:Depends}, $${java:Depends}"/>
 	<property name="mdpc.arch" value="all"/>
-	<property name="mdpc.cpyear" value="2024"/>
+	<property name="mdpc.cpyear" value="2025"/>
 	<property name="mdpc.copyright"
 		value="(c) ${mdpc.cpyear} Ma_Sys.ma &lt;info@masysma.net&gt;"/>
 	<property name="mdpc.lfiles" value="*"/>
@@ -45,7 +45,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<dirname property="mdpc.internal.repodir" file="${ant.file}"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.22 / MDPC 2.1</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.23 / MDPC 2.1</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -690,6 +690,9 @@ ${mdpc.copyright.file}</echo>
 					<tokenfilter>
 						<replaceregex
 							pattern=" \([^)]+\)"
+							replace="" flags="g"/>
+						<replaceregex
+							pattern=" \| [^,]+"
 							replace="" flags="g"/>
 						<replaceregex pattern=","
 							replace=" " flags="g"/>
