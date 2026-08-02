@@ -47,10 +47,10 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	<property name="mdpc.changelog"
 			value="${mdpc.internal.repodir}/debian-changelog.txt"/>
 	<property name="mdpc.arch.default" value="amd64"/>
-	<property name="mdpc.internal.debcargo" value="${mdpc.internal.rust}"/>
+	<property name="mdpc.debcargo" value="${mdpc.internal.rust}"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.26 / MDPC 2.1</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.27 / MDPC 2.1</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -442,7 +442,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	</target>
 
 	<target name="package">
-		<sequential if:true="${mdpc.internal.debcargo}">
+		<sequential if:true="${mdpc.debcargo}">
 			<mkdir dir="mdpcpkgtmp"/>
 			<exec dir="mdpcpkgtmp" executable="debcargo">
 				<arg value="package"/>
@@ -461,7 +461,7 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 				<arg value="-tc"/>
 			</exec>
 		</sequential>
-		<sequential unless:true="${mdpc.internal.debcargo}">
+		<sequential unless:true="${mdpc.debcargo}">
 			<property name="mdpc.internal.pkgtmp"
 					value="mdpcpkgtmp/${mdpc.name}-0.0.0"/>
 			<property name="mdpc.internal.recommends" value=""
