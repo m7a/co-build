@@ -44,8 +44,13 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 
 	<dirname property="mdpc.internal.repodir" file="${ant.file}"/>
 
+	<property name="mdpc.changelog"
+			value="${mdpc.internal.repodir}/debian-changelog.txt"/>
+	<property name="mdpc.arch.default" value="amd64"/>
+	<property name="mdpc.internal.debcargo" value="${mdpc.internal.rust}"/>
+
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.23 / MDPC 2.1</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.26 / MDPC 2.1</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -437,48 +442,68 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 	</target>
 
 	<target name="package">
-		<property name="mdpc.internal.pkgtmp"
+		<sequential if:true="${mdpc.internal.debcargo}">
+			<mkdir dir="mdpcpkgtmp"/>
+			<exec dir="mdpcpkgtmp" executable="debcargo">
+				<arg value="package"/>
+				<arg value="--no-overlay-write-back"/>
+				<arg value="--changelog-ready"/>
+				<arg value="--config"/>
+				<arg value="../${mdpc.rust.name}.toml"/>
+				<arg value="${mdpc.rust.name}"/>
+				<arg value="=${mdpc.rust.version}"/>
+			</exec>
+			<exec dir="mdpcpkgtmp/rust-${mdpc.rust.name}-${mdpc.rust.version}" executable="debuild">
+				<env key="DEB_BUILD_OPTIONS" value="noddebs"/>
+				<arg value="-j8"/>
+				<arg value="-us"/>
+				<arg value="-uc"/>
+				<arg value="-tc"/>
+			</exec>
+		</sequential>
+		<sequential unless:true="${mdpc.internal.debcargo}">
+			<property name="mdpc.internal.pkgtmp"
 					value="mdpcpkgtmp/${mdpc.name}-0.0.0"/>
-		<property name="mdpc.internal.recommends" value=""
+			<property name="mdpc.internal.recommends" value=""
 						unless:set="mdpc.recommends"/>
-		<property name="mdpc.internal.recommends"
+			<property name="mdpc.internal.recommends"
 				value="&#x0a;Recommends: ${mdpc.recommends}"
 				if:set="mdpc.recommends"/>
-		<property name="mdpc.internal.suggests" value=""
+			<property name="mdpc.internal.suggests" value=""
 						unless:set="mdpc.suggests"/>
-		<property name="mdpc.internal.suggests"
+			<property name="mdpc.internal.suggests"
 				value="&#x0a;Suggests: ${mdpc.suggests}"
 				if:set="mdpc.suggests"/>
-		<property name="mdpc.internal.conflicts" value=""
+			<property name="mdpc.internal.conflicts" value=""
 						unless:set="mdpc.conflicts"/>
-		<property name="mdpc.internal.conflicts"
+			<property name="mdpc.internal.conflicts"
 				value="&#x0a;Conflicts: ${mdpc.conflicts}"
 				if:set="mdpc.conflicts"/>
 
-		<property name="mdpc.internal.absoluteincludepath"
+			<property name="mdpc.internal.absoluteincludepath"
 				location="${masysma.internal.includepath}"/>
 
-		<property name="mdpc.add.rules" value=""
+			<property name="mdpc.add.rules" value=""
 						unless:set="mdpc.add.rules"/>
-		<property name="mdpc.add.dh" value="" unless:set="mdpc.add.dh"/>
+			<property name="mdpc.add.dh" value=""
+						unless:set="mdpc.add.dh"/>
 
-		<mkdir dir="${mdpc.internal.pkgtmp}/debian/source"/>
-		<echo file="${mdpc.internal.pkgtmp}/debian/source/format"
-						>3.0 (native)</echo>
-		<echo if:set="mdpc.file.displace"
-		file="${mdpc.internal.pkgtmp}/debian/${mdpc.name}.displace"
-						>${mdpc.file.displace}</echo>
+			<mkdir dir="${mdpc.internal.pkgtmp}/debian/source"/>
+			<echo file="${mdpc.internal.pkgtmp}/debian/source/format"
+							>3.0 (native)</echo>
+			<echo if:set="mdpc.file.displace"
+			file="${mdpc.internal.pkgtmp}/debian/${mdpc.name}.displace">${mdpc.file.displace}</echo>
 
 <!-- BEGIN FORMAT PRESERVED AREA -->
-		<echo file="${mdpc.internal.pkgtmp}/debian/rules"
+			<echo file="${mdpc.internal.pkgtmp}/debian/rules"
 >#!/usr/bin/make -f
 ${mdpc.add.rules}
 
 %:
 	MDVL_CI_PHOENIX_ROOT="${mdpc.internal.absoluteincludepath}" dh $@ --with=config-package ${mdpc.add.dh}
 </echo>
-		<chmod file="${mdpc.internal.pkgtmp}/debian/rules" perm="755"/>
-		<echo file="${mdpc.internal.pkgtmp}/debian/control"
+			<chmod file="${mdpc.internal.pkgtmp}/debian/rules" perm="755"/>
+			<echo file="${mdpc.internal.pkgtmp}/debian/control"
 >Source: ${mdpc.name}
 Maintainer: ${mdpc.maintainer}
 Section: ${mdpc.section}
@@ -490,34 +515,36 @@ Package: ${mdpc.name}
 Architecture: ${mdpc.arch}
 Depends: $${misc:Depends}, ${mdpc.depends}${mdpc.internal.recommends}${mdpc.internal.suggests}${mdpc.internal.conflicts}
 Description: ${mdpc.descrs}${mdpc.descrl}</echo>
-		<echo file="${mdpc.internal.pkgtmp}/debian/copyright" encoding="UTF-8">Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+			<echo file="${mdpc.internal.pkgtmp}/debian/copyright"
+				encoding="UTF-8">Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 ${mdpc.copyright.file}</echo>
-		<echo file="${mdpc.internal.pkgtmp}/debian/${mdpc.name}.install"
+			<echo file="${mdpc.internal.pkgtmp}/debian/${mdpc.name}.install"
 >${mdpc.file.install}</echo>
 <!-- END FORMAT PRESERVED ECHO -->
-		<copy todir="mdpcpkgtmp/${mdpc.name}-0.0.0">
-			<fileset dir=".">
-				<exclude name="${mdpc.name}*.deb"/>
-				<exclude name="mdpcpkgtmp/**"/>
-				<!-- to be copied separately -->
-				<exclude name="debian-changelog.txt"/>
-			</fileset>
-		</copy>
-		<copy tofile="mdpcpkgtmp/${mdpc.name}-0.0.0/debian/changelog"
-						file="debian-changelog.txt"/>
+			<copy todir="mdpcpkgtmp/${mdpc.name}-0.0.0">
+				<fileset dir=".">
+					<exclude name="${mdpc.name}*.deb"/>
+					<exclude name="mdpcpkgtmp/**"/>
+					<!-- to be copied separately -->
+					<exclude name="debian-changelog.txt"/>
+				</fileset>
+			</copy>
+			<copy tofile="mdpcpkgtmp/${mdpc.name}-0.0.0/debian/changelog"
+							file="debian-changelog.txt"/>
 
-		<exec executable="debuild" failonerror="true"
-					dir="mdpcpkgtmp/${mdpc.name}-0.0.0">
-			<!--
-				skip generation of rarely needed debug symbol
-				packages
-			-->
-			<env key="DEB_BUILD_OPTIONS" value="noddebs"/>
-			<arg value="-j8"/>
-			<arg value="-us"/>
-			<arg value="-uc"/>
-			<arg value="-tc"/>
-		</exec>
+			<exec executable="debuild" failonerror="true"
+						dir="mdpcpkgtmp/${mdpc.name}-0.0.0">
+				<!--
+					skip generation of rarely needed debug symbol
+					packages
+				-->
+				<env key="DEB_BUILD_OPTIONS" value="noddebs"/>
+				<arg value="-j8"/>
+				<arg value="-us"/>
+				<arg value="-uc"/>
+				<arg value="-tc"/>
+			</exec>
+		</sequential>
 
 		<move todir="..">
 			<fileset dir="mdpcpkgtmp">
@@ -548,8 +575,8 @@ ${mdpc.copyright.file}</echo>
 	<!-- =============================================================== -->
 
 	<target name="masysma_internal_check_cleanpkg">
-		<available file="${mdpc.internal.repodir}/debian-changelog.txt"
-			type="file" property="mdpc.internal.haschangelog"/>
+		<available file="${mdpc.changelog}" type="file"
+					property="mdpc.internal.haschangelog"/>
 		<exec executable="git" failonerror="false"
 					outputproperty="mdpc.internal.branch">
 			<arg value="-C"/>
@@ -589,12 +616,8 @@ ${mdpc.copyright.file}</echo>
 				</and>
 				<and>
 					<equals arg1="${mdpc.arch}" arg2="all"/>
-					<!--
-						TODO z make this a variable if
-						anybody needs to build on
-						primarily non-amd64 arches
-					-->
-					<equals arg1="${os.arch}" arg2="amd64"/>
+					<equals arg1="${os.arch}"
+						arg2="${mdpc.arch.default}"/>
 				</and>
 			</or>
 		</condition>
@@ -604,7 +627,7 @@ ${mdpc.copyright.file}</echo>
 				depends="masysma_internal_check_archcompat"
 				if="mdpc.internal.check.archcompat">
 		<loadresource property="mdpc.internal.changelogversion">
-			<file file="${mdpc.internal.repodir}/debian-changelog.txt"/>
+			<file file="${mdpc.changelog}"/>
 			<filterchain>
 				<headfilter lines="1"/>
 				<tokenfilter><replaceregex
