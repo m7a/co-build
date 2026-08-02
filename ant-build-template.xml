@@ -46,11 +46,12 @@ Copyright: ${mdpc.copyright}${mdpc.lblock}</property>
 
 	<property name="mdpc.changelog"
 			value="${mdpc.internal.repodir}/debian-changelog.txt"/>
+	<property name="mdpc.changelog.name" value="${mdpc.name}"/>
 	<property name="mdpc.arch.default" value="amd64"/>
 	<property name="mdpc.debcargo" value="${mdpc.internal.rust}"/>
 
 	<target name="masysma_internal_ver">
-		<echo>Ma_Sys.ma Build Template 1.0.27 / MDPC 2.1</echo>
+		<echo>Ma_Sys.ma Build Template 1.0.28 / MDPC 2.1</echo>
 	</target>
 
 	<!-- =============================================================== -->
@@ -566,7 +567,7 @@ ${mdpc.copyright.file}</echo>
 		<exec executable="/bin/sh" failonerror="true">
 			<env key="DEBEMAIL" value="${mdpc.maintainer}"/>
 			<arg value="-ec"/>
-			<arg value="dch --package ${mdpc.name} -D stable -c debian-changelog.txt -i &lt; /dev/tty &gt; /dev/tty 2&gt; /dev/tty"/>
+			<arg value="dch --package ${mdpc.changelog.name} -D stable -c ${mdpc.changelog} -i &lt; /dev/tty &gt; /dev/tty 2&gt; /dev/tty"/>
 		</exec>
 	</target>
 
